@@ -80,25 +80,33 @@ class Reports:
         :param group_id: The optional group id
         :return: The report as returned by the API
         """
-        # group_id can be none, account for it
-        if group_id is None:
-            groups_part = '/'
-        else:
-            groups_part = f'/{self.groups_snippet}/{group_id}/'
+        # # group_id can be none, account for it
+        # if group_id is None:
+        #     groups_part = '/'
+        # else:
+        #     groups_part = f'/{self.groups_snippet}/{group_id}/'
+        #
+        # # form the url
+        # url = f'{self.base_url}{groups_part}{self.reports_snippet}/{report_id}'
+        # # form the headers
+        # headers = self.client.auth_header
+        #
+        # # get the response
+        # response = requests.get(url, headers=headers)
+        #
+        # # 200 - OK. Indicates success.
+        # if response.status_code != 200:
+        #     raise RuntimeError(f'Get reports request returned http error: {response.status_code}')
+        #
+        # return Report.from_dict(json.loads(response.text))
 
-        # form the url
-        url = f'{self.base_url}{groups_part}{self.reports_snippet}/{report_id}'
-        # form the headers
-        headers = self.client.auth_header
+        reports = self.get_reports(group_id)
 
-        # get the response
-        response = requests.get(url, headers=headers)
+        for report in reports:
+            if report.id == report_id:
+                return report
 
-        # 200 - OK. Indicates success.
-        if response.status_code != 200:
-            raise RuntimeError(f'Get reports request returned http error: {response.status_code}')
-
-        return Report.from_dict(json.loads(response.text))
+        raise RuntimeError('Could not find report')
 
     def clone_report(self, report_id, name, target_group_id, dataset_id, group_id=None):
         """
