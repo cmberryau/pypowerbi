@@ -270,6 +270,17 @@ class PowerBIAPITests(TestCase):
         for table in tables:
             self.assertIn(self.test_table_prefix, table.name)
 
+    def test_client_get_dataset_parameters(self):
+        for group_id in self.group_ids:
+            self._test_client_get_dataset_parameters_impl(self.client, group_id)
+
+    def _test_client_get_dataset_parameters_impl(self, client, group_id=None):
+        dataset = self.add_mock_dataset(client, 1, group_id)
+        parameters = client.datasets.get_dataset_parameters(dataset.id, group_id)
+
+        # make sure that we get some parameters back
+        self.assertIsNotNone(parameters)
+
     def test_client_post_rows(self):
         for group_id in self.group_ids:
             self._test_client_post_rows_impl(self.client, group_id)

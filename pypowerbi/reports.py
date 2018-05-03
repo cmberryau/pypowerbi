@@ -144,7 +144,7 @@ class Reports:
 
         # 200 - OK. Indicates success.
         if response.status_code != 200:
-            raise RuntimeError(f'Get reports request returned http error: {response.status_code}')
+            raise RuntimeError(f'Clone reports request returned http error: {response.status_code}')
 
         return Report.from_dict(json.loads(response.text))
 
