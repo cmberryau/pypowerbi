@@ -1,5 +1,6 @@
 import json
 
+
 class Dataset:
     # json keys
     id_key = 'id'
@@ -95,15 +96,19 @@ class Dataset:
 class DatasetEncoder(json.JSONEncoder):
     def default(self, o):
         table_encoder = TableEncoder()
-        return {
+
+        json_dict = {
             Dataset.name_key: o.name,
             Dataset.tables_key: [table_encoder.default(x) for x in o.tables],
         }
+
+        return json_dict
 
 
 class Table:
     name_key = 'name'
     columns_key = 'columns'
+    measures_key = 'measures'
 
     @classmethod
     def from_dict(cls, dictionary):
@@ -121,20 +126,96 @@ class Table:
         else:
             raise RuntimeError('Table dict has no name key')
 
-        return Table(name=table_name)
+        # measures are optional
+        if Table.measures_key in dictionary:
+            table_measures = [Table.from_dict(x) for x in dictionary[Table.measures_key]]
+        else:
+            table_measures = None
 
-    def __init__(self, name, columns=None):
+        return Table(name=table_name, measures=table_measures)
+
+    def __init__(self, name, columns=None, measures=None):
         self.name = name
         self.columns = columns
+        self.measures = measures
 
 
 class TableEncoder(json.JSONEncoder):
     def default(self, o):
         column_encoder = ColumnEncoder()
-        return {
+
+        json_dict = {
             Table.name_key: o.name,
             Table.columns_key: [column_encoder.default(x) for x in o.columns]
         }
+
+        if o.measures is not None:
+            measure_encoder = MeasureEncoder()
+            json_dict[Table.measures_key] = [measure_encoder.default(x) for x in o.measures]
+
+        return json_dict
+
+
+class Measure:
+    name_key = 'name'
+    expression_key = 'expression'
+    formatstring_key = 'formatString'
+    is_hidden_key = 'isHidden'
+
+    @classmethod
+    def from_dict(cls, dictionary):
+        # name is required
+        if Measure.name_key in dictionary:
+            measure_name = str(dictionary[Measure.name_key])
+            # name cannot be whitespace
+            if measure_name.isspace():
+                raise RuntimeError('Measure dict has empty name key value')
+        else:
+            raise RuntimeError('Measure dict has no name key')
+
+        # expression is required
+        if Measure.expression_key in dictionary:
+            measure_expression = str(dictionary[Measure.expression_key])
+            # expression cannot be whitespace
+            if measure_expression.isspace():
+                raise RuntimeError('Measure dict has empty expression key value')
+        else:
+            raise RuntimeError('Measure dict has no expression key')
+
+        if Measure.formatstring_key in dictionary:
+            measure_formatstring = str(dictionary[Measure.formatstring_key])
+        else:
+            measure_formatstring = None
+
+        if Measure.is_hidden_key in dictionary:
+            measure_is_hidden = bool(dictionary[Measure.is_hidden_key])
+        else:
+            measure_is_hidden = None
+
+        return Measure(name=measure_name, expression=measure_expression, formatstring=measure_formatstring,
+                          is_hidden=measure_is_hidden)
+
+    def __init__(self, name, expression, formatstring=None, is_hidden=None):
+        self.name = name
+        self.expression = expression
+        self.formatstring = formatstring
+        self.is_hidden = is_hidden
+
+
+class MeasureEncoder(json.JSONEncoder):
+    def default(self, o):
+        json_dict = {
+            Measure.name_key: o.name,
+            Measure.expression_key: o.expression,
+        }
+
+        if o.formatstring is not None:
+            json_dict[Measure.formatstring_key] = o.formatstring
+
+        if o.is_hidden is not None:
+            json_dict[Measure.is_hidden_key] = o.is_hidden
+
+        return json_dict
 
 
 class Column:

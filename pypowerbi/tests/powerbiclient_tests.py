@@ -75,14 +75,22 @@ class PowerBIAPITests(TestCase):
 
         for x in range(0, table_count):
             # we add a column of each type for each table
-            column0 = Column(name='id', data_type='Int64')
-            column1 = Column(name='name', data_type='string')
-            column2 = Column(name='is_interesting', data_type='boolean')
-            column3 = Column(name='cost_usd', data_type='double')
-            column4 = Column(name='purchase_date', data_type='datetime')
+            columns = [
+                Column(name='id', data_type='Int64'),
+                Column(name='name', data_type='string'),
+                Column(name='is_interesting', data_type='boolean'),
+                Column(name='cost_usd', data_type='double'),
+                Column(name='purchase_date', data_type='datetime'),
+            ]
+
+            table_name = f'{cls.test_table_prefix}{x}'
+
+            measures = [
+                Measure(name=f'entry_count_{x}', expression=f'COUNTROWS( \'{table_name}\' )')
+            ]
 
             # add the table
-            tables.append(Table(name=f'{cls.test_table_prefix}{x}', columns=[column0, column1, column2, column3, column4]))
+            tables.append(Table(name=table_name, columns=columns, measures=measures))
 
         # create the dataset
         dataset = Dataset(name=f'{cls.test_dataset_prefix}{datetime.datetime.utcnow()}', tables=tables)
@@ -172,6 +180,8 @@ class PowerBIAPITests(TestCase):
             self._test_client_get_dataset_impl(self.client, group_id)
 
     def _test_client_get_dataset_impl(self, client, group_id=None):
+        # add a mock dataset
+        self.add_mock_dataset(client, group_id=group_id)
         # validate that we have some valid datasets
         datasets = client.datasets.get_datasets(group_id)
         self.assertGreater(len(datasets), 0)
@@ -193,13 +203,22 @@ class PowerBIAPITests(TestCase):
         self.assertEqual(len(datasets), 0 + self.dataset_counts[group_id])
 
         # we add a column of each type
-        column0 = Column(name='id', data_type='Int64')
-        column1 = Column(name='name', data_type='string')
-        column2 = Column(name='is_interesting', data_type='boolean')
-        column3 = Column(name='cost_usd', data_type='double')
-        column4 = Column(name='purchase_date', data_type='datetime')
+        columns = [
+            Column(name='id', data_type='Int64'),
+            Column(name='name', data_type='string'),
+            Column(name='is_interesting', data_type='boolean'),
+            Column(name='cost_usd', data_type='double'),
+            Column(name='purchase_date', data_type='datetime')
+        ]
 
-        table = Table(name=f'{self.test_table_prefix}0', columns=[column0, column1, column2, column3, column4])
+        table_name = f'{self.test_table_prefix}0'
+
+        # add a measure
+        measures = [
+            Measure(name='entry_count_0', expression=f'COUNTROWS( \'{table_name}\' )')
+        ]
+
+        table = Table(name=table_name, columns=columns, measures=measures)
         dataset_name = f'{self.test_dataset_prefix}{datetime.datetime.utcnow()}'
         dataset = Dataset(name=dataset_name, tables=[table])
 
