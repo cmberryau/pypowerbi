@@ -142,12 +142,13 @@ class Table:
 
 class TableEncoder(json.JSONEncoder):
     def default(self, o):
-        column_encoder = ColumnEncoder()
-
         json_dict = {
             Table.name_key: o.name,
-            Table.columns_key: [column_encoder.default(x) for x in o.columns]
         }
+
+        if o.columns is not None:
+            column_encoder = ColumnEncoder()
+            json_dict[Table.columns_key] = [column_encoder.default(x) for x in o.columns]
 
         if o.measures is not None:
             measure_encoder = MeasureEncoder()
