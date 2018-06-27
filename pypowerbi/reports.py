@@ -132,12 +132,12 @@ class Reports:
         # form the json
         json_dict = {
             Report.name_key: name,
-            Report.target_model_id_key: dataset_id,
+            Report.target_model_id_key: str(dataset_id),
         }
 
         # target group id can be none, account for it
         if target_group_id is not None:
-            json_dict[Report.target_workspace_id_key] = target_group_id
+            json_dict[Report.target_workspace_id_key] = str(target_group_id)
 
         # get the response
         response = requests.post(url, headers=headers, json=json_dict)

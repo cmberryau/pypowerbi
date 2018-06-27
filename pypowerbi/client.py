@@ -1,4 +1,5 @@
 import json
+import datetime
 
 from .reports import Reports
 from .datasets import Datasets
@@ -102,3 +103,7 @@ class EmbedToken:
         expiration = dictionary[cls.expiration_key]
 
         return EmbedToken(token, token_id, expiration)
+
+    @property
+    def expiration_as_datetime(self):
+        return datetime.datetime.strptime(self.expiration, '%Y-%m-%dT%H:%M:%SZ')
