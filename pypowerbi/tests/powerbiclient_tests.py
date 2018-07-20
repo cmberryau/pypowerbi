@@ -71,8 +71,25 @@ class PowerBIAPITests(TestCase):
 
     @classmethod
     def add_mock_dataset(cls, client, table_count=1, group_id=None):
-        tables = []
+        tables = cls.create_mock_tables(table_count)
 
+        # create the dataset
+        dataset = Dataset(name=f'{cls.test_dataset_prefix}{datetime.datetime.utcnow()}', tables=tables)
+
+        # post and return the result
+        return client.datasets.post_dataset(dataset, group_id)
+
+    @classmethod
+    def add_mock_dataset_with_tables(cls, client, tables, group_id=None):
+        # create the dataset
+        dataset = Dataset(name=f'{cls.test_dataset_prefix}{datetime.datetime.utcnow()}', tables=tables)
+
+        # post and return the result
+        return client.datasets.post_dataset(dataset, group_id)
+
+    @classmethod
+    def create_mock_tables(cls, table_count):
+        tables = []
         for x in range(0, table_count):
             # we add a column of each type for each table
             columns = [
@@ -92,11 +109,7 @@ class PowerBIAPITests(TestCase):
             # add the table
             tables.append(Table(name=table_name, columns=columns, measures=measures))
 
-        # create the dataset
-        dataset = Dataset(name=f'{cls.test_dataset_prefix}{datetime.datetime.utcnow()}', tables=tables)
-
-        # post and return the result
-        return client.datasets.post_dataset(dataset, group_id)
+        return tables
 
     @classmethod
     def add_mock_report(cls, client, group_id):
