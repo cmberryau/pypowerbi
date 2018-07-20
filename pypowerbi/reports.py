@@ -38,7 +38,7 @@ class Reports:
         reports = self.get_reports(group_id)
 
         for report in reports:
-            if report.id == report_id:
+            if report.id == str(report_id):
                 return True
 
         return False

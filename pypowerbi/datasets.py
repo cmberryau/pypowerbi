@@ -37,7 +37,7 @@ class Datasets:
         datasets = self.get_datasets(group_id)
 
         for dataset in datasets:
-            if dataset.id == dataset_id:
+            if dataset.id == str(dataset_id):
                 return True
 
         return False
