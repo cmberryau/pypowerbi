@@ -5,6 +5,7 @@ import datetime
 
 from .reports import Reports
 from .datasets import Datasets
+from .imports import Imports
 
 
 class PowerBIClient:
@@ -19,6 +20,7 @@ class PowerBIClient:
         self.token = token
         self.datasets = Datasets(self)
         self.reports = Reports(self)
+        self.imports = Imports(self)
 
     @property
     def auth_header(self):

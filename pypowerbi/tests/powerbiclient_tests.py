@@ -537,3 +537,11 @@ class PowerBIAPITests(TestCase):
         self.assertIsNotNone(token.token)
         self.assertIsNotNone(token.token_id)
         self.assertIsNotNone(token.expiration)
+
+    def test_post_import(self):
+        for group_id in self.group_ids:
+            self._test_post_import_impl(self.client, group_id)
+
+    def _test_post_import_impl(self, client, group_id):
+        import_object = client.imports.upload_file('test_report.pbix', 'test_dataset', None, group_id)
+        self.assertIsNotNone(import_object)
