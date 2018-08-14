@@ -1,3 +1,4 @@
+# -*- coding: future_fstrings -*-
 import requests
 import json
 

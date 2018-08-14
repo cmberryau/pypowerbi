@@ -1,3 +1,5 @@
+# -*- coding: future_fstrings -*-
+
 import adal
 import datetime
 from unittest import TestCase
