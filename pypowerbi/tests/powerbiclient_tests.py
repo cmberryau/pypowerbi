@@ -2,6 +2,7 @@
 
 import adal
 import datetime
+import time
 from unittest import TestCase
 
 from pypowerbi.client import *
@@ -9,6 +10,8 @@ from pypowerbi.reports import *
 from pypowerbi.report import *
 from pypowerbi.datasets import *
 from pypowerbi.dataset import *
+from pypowerbi.imports import *
+from pypowerbi.import_class import *
 from pypowerbi.tests.settings import PowerBITestSettings
 
 
@@ -538,10 +541,44 @@ class PowerBIAPITests(TestCase):
         self.assertIsNotNone(token.token_id)
         self.assertIsNotNone(token.expiration)
 
-    def test_post_import(self):
+    def test_upload_file(self):
         for group_id in self.group_ids:
-            self._test_post_import_impl(self.client, group_id)
+            self._test_upload_file_impl(self.client, group_id)
 
-    def _test_post_import_impl(self, client, group_id):
-        import_object = client.imports.upload_file('test_report.pbix', 'test_dataset', None, group_id)
+    def _test_upload_file_impl(self, client, group_id):
+        # upload the file, get back an import object
+        import_object = client.imports.upload_file('test_report.pbix', 'test_report', None, group_id)
         self.assertIsNotNone(import_object)
+
+        # ensure that there is at least one import
+        imports = client.imports.get_imports(group_id)
+        self.assertLess(0, len(imports))
+
+        # search for our most recent import
+        found = False
+        for fetched_import in imports:
+            self.assertIsNotNone(fetched_import)
+            if fetched_import.id == import_object.id:
+                found = True
+
+        self.assertTrue(found)
+
+        checks = 0
+        while import_object.import_state != Import.import_state_succeeded and checks < 3:
+            time.sleep(1)
+            # get the import object again to check the import state
+            import_object = client.imports.get_import(import_object.id, group_id)
+            self.assertIsNotNone(import_object)
+            checks = checks + 1
+
+        self.assertEqual(1, len(import_object.datasets))
+        self.assertEqual(1, len(import_object.reports))
+
+        dataset = client.datasets.get_dataset(import_object.datasets[0].id, group_id)
+        report = client.reports.get_report(import_object.reports[0].id, group_id)
+
+        self.assertIsNotNone(dataset)
+        self.assertIsNotNone(report)
+
+        client.reports.delete_report(report.id, group_id)
+        client.datasets.delete_dataset(dataset.id, group_id)

@@ -56,14 +56,8 @@ class Report:
         else:
             embed_url = None
 
-        # dataset id is required
-        if cls.dataset_id_key in dictionary:
-            dataset_id = str(dictionary[cls.dataset_id_key])
-            # dataset id cannot be whitespace
-            if dataset_id.isspace():
-                raise RuntimeError(f'Report dict has empty {cls.dataset_id_key} key value')
-        else:
-            raise RuntimeError(f'Report dict has no {cls.dataset_id_key} key')
+        # dataset id is optional
+        dataset_id = dictionary.get(cls.dataset_id_key)
 
         return Report(report_id, report_name, web_url, embed_url, dataset_id)
 

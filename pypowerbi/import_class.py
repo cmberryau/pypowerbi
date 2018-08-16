@@ -1,9 +1,7 @@
 # -*- coding: future_fstrings -*-
 
-import json
-
-from .dataset import Dataset, DatasetEncoder
-from .report import Report, ReportEncoder
+from .dataset import Dataset
+from .report import Report
 
 
 class Import:
@@ -15,9 +13,16 @@ class Import:
     import_state_key = 'importState'
     reports_key = 'reports'
     updated_datetime_key = 'updatedDateTime'
+    source_key = 'source'
+    connection_type_key = 'connectionType'
+    value_key = 'value'
 
-    def __init__(self, import_id, name=None, created_datetime=None, datasets=None,
-                 import_state=None, reports=None, updated_datetime=None):
+    # import state values
+    import_state_succeeded = 'Succeeded'
+    import_state_publishing = 'Publishing'
+
+    def __init__(self, import_id, name=None, created_datetime=None, datasets=None, import_state=None,
+                 reports=None, updated_datetime=None, source=None, connection_type=None):
         self.id = import_id
         self.name = name
         self.created_datetime = created_datetime
@@ -25,6 +30,8 @@ class Import:
         self.import_state = import_state
         self.reports = reports
         self.updated_datetime = updated_datetime
+        self.source = source
+        self.connection_type = connection_type
 
     @classmethod
     def from_dict(cls, dictionary):
@@ -48,49 +55,8 @@ class Import:
             reports = None
 
         updated_datetime = dictionary.get(cls.updated_datetime_key)
+        source = dictionary.get(cls.source_key)
+        connection_type = dictionary.get(cls.connection_type_key)
 
-        return cls(import_id, name, created_datetime, datasets,
-                   import_state, reports, updated_datetime)
-
-
-class ImportEncoder(json.JSONEncoder):
-    def default(self, o):
-        json_dict = {
-            Import.id_key: o.id,
-        }
-
-        if o.name is not None:
-            json_dict[Import.name_key] = o.name
-
-        if o.created_datetime is not None:
-            json_dict[Import.created_timedate_key] = o.created_datetime
-
-        if o.datasets is not None:
-            encoder = DatasetEncoder()
-            json_dict[Import.datasets_key] = [encoder.default(x) for x in o.datasets]
-
-        if o.import_state is not None:
-            json_dict[Import.import_state_key] = o.import_state
-
-        if o.reports is not None:
-            encoder = ReportEncoder()
-            json_dict[Import.reports_key] = [encoder.default(x) for x in o.reports]
-
-        if o.update_datetime is not None:
-            json_dict[Import.updated_datetime_key] = o.update_datetime
-
-        return json_dict
-
-
-class ImportConflictHandlerMode:
-    pass
-
-
-class ImportInfo:
-    # json keys
-    connection_type_key = 'connectionType'
-    filepath_key = 'filePath'
-    fileurl_key = 'fileUrl'
-
-    def __init__(self):
-        pass
+        return cls(import_id, name, created_datetime, datasets, import_state,
+                   reports, updated_datetime, source, connection_type)
