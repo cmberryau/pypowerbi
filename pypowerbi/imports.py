@@ -2,6 +2,8 @@
 
 import requests
 import json
+import urllib
+import re
 
 from .import_class import Import
 
@@ -16,6 +18,7 @@ class Imports:
     def __init__(self, client):
         self.client = client
         self.base_url = f'{self.client.api_url}/{self.client.api_version_snippet}/{self.client.api_myorg_snippet}'
+        self.upload_file_replace_regex = re.compile('(?![A-z]|[0-9]).')
 
     @classmethod
     def import_from_response(cls, response):
@@ -33,8 +36,13 @@ class Imports:
         else:
             groups_part = f'/{self.groups_snippet}/{group_id}/'
 
+        # substitute using the regex pattern
+        prepared_displayname = re.sub(self.upload_file_replace_regex, '-', dataset_displayname)
+        # append the pbix extension (strange yes, but names correctly in powerbi service if so)
+        prepared_displayname = f'{prepared_displayname}.pbix'
+
         url = f'{self.base_url}{groups_part}{self.imports_snippet}' \
-              f'?{self.dataset_displayname_snippet}={dataset_displayname}'
+              f'?{urllib.parse.urlencode({self.dataset_displayname_snippet : prepared_displayname})}'
 
         if nameconflict is not None:
             url = url + f'&{self.nameconflict_snippet}={nameconflict}'
