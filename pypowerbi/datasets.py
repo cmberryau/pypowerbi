@@ -2,6 +2,7 @@
 import requests
 import json
 
+from requests.exceptions import HTTPError
 from .dataset import *
 
 
@@ -66,7 +67,7 @@ class Datasets:
 
         # 200 is the only successful code, raise an exception on any other response code
         if response.status_code != 200:
-            raise RuntimeError(f'Get Datasets request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Get Datasets request returned http error: {response.status_code}')
 
         return self.datasets_from_get_datasets_response(response)
 
@@ -93,7 +94,7 @@ class Datasets:
 
         # 200 is the only successful code, raise an exception on any other response code
         if response.status_code != 200:
-            raise RuntimeError(f'Get Datasets request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Get Datasets request returned http error: {response.status_code}')
 
         return Dataset.from_dict(json.loads(response.text))
 
@@ -123,7 +124,7 @@ class Datasets:
 
         # 201 - Created. The request was fulfilled and a new Dataset was created.
         if response.status_code != 201:
-            raise RuntimeError(f'Post Datasets request returned http code: {response.status_code}')
+            raise HTTPError(response, f'Post Datasets request returned http code: {response.status_code}')
 
         return Dataset.from_dict(json.loads(response.text))
 
@@ -149,7 +150,7 @@ class Datasets:
 
         # 200 is the only successful code
         if response.status_code != 200:
-            raise RuntimeError(f'Delete Dataset request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Delete Dataset request returned http error: {response.status_code}')
 
     def delete_all_datasets(self, group_id=None):
         """
@@ -185,7 +186,7 @@ class Datasets:
 
         # 200 is the only successful code, raise an exception on any other response code
         if response.status_code != 200:
-            raise RuntimeError(f'Get Datasets request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Get Datasets request returned http error: {response.status_code}')
 
         return self.tables_from_get_tables_response(response)
 
@@ -220,7 +221,7 @@ class Datasets:
 
         # 200 is the only successful code
         if response.status_code != 200:
-            raise RuntimeError(f'Post row request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Post row request returned http error: {response.status_code}')
 
     def delete_rows(self, dataset_id, table_name, group_id=None):
         """
@@ -247,7 +248,7 @@ class Datasets:
 
         # 200 is the only successful code
         if response.status_code != 200:
-            raise RuntimeError(f'Post row request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Post row request returned http error: {response.status_code}')
 
     def get_dataset_parameters(self, dataset_id, group_id=None):
         """
@@ -272,7 +273,7 @@ class Datasets:
 
         # 200 is the only successful code, raise an exception on any other response code
         if response.status_code != 200:
-            raise RuntimeError(f'Get Datasets request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Get Datasets request returned http error: {response.status_code}')
 
         return json.loads(response.text)
 

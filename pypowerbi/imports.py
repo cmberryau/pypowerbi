@@ -1,10 +1,10 @@
 # -*- coding: future_fstrings -*-
-
 import requests
 import json
 import urllib
 import re
 
+from requests.exceptions import HTTPError
 from .import_class import Import
 
 
@@ -61,9 +61,9 @@ class Imports:
             import_object = self.import_from_response(response)
         # 490 Conflict (due to name)
         elif response.status_code == 409:
-            raise NotImplementedError
+            raise NotImplementedError("Name conflict resolution not implemented yet")
         else:
-            raise RuntimeError(f"Upload file failed with status code: {response.status_code}")
+            raise HTTPError(response, f"Upload file failed with status code: {response.status_code}")
 
         return import_object
 
@@ -82,7 +82,7 @@ class Imports:
         if response.status_code == 200:
             import_object = self.import_from_response(response)
         else:
-            raise RuntimeError(f"Get import failed with status code: {response.status_code}")
+            raise HTTPError(response, f"Get import failed with status code: {response.status_code}")
 
         return import_object
 
@@ -101,6 +101,6 @@ class Imports:
         if response.status_code == 200:
             import_object = self.imports_from_response(response)
         else:
-            raise RuntimeError(f"Get imports failed with status code: {response.status_code}")
+            raise HTTPError(response, f"Get imports failed with status code: {response.status_code}")
 
         return import_object
