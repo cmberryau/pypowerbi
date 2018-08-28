@@ -582,3 +582,25 @@ class PowerBIAPITests(TestCase):
 
         client.reports.delete_report(report.id, group_id)
         client.datasets.delete_dataset(dataset.id, group_id)
+
+    def test_groups_count_method(self):
+        for group_id in self.group_ids:
+            self._test_groups_count_method(self.client, group_id)
+
+    def _test_groups_count_method(self, client, group_id):
+        group_count = client.groups.count()
+        self.assertGreater(0, group_count)
+
+    def test_groups_has_group_method(self):
+        for group_id in self.group_ids:
+            self._test_groups_has_group_method(self.client, group_id)
+
+    def _test_groups_has_group_method(self, client, group_id):
+        pass
+
+    def test_groups_get_groups_method(self):
+        for group_id in self.group_ids:
+            self._test_groups_get_groups_method(self.client, group_id)
+
+    def _test_groups_get_groups_method(self, client, group_id):
+        pass

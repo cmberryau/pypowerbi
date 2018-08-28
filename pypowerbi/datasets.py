@@ -34,7 +34,7 @@ class Datasets:
         Evaluates if the dataset exists
         :param dataset_id: The id of the dataset to evaluate
         :param group_id: The optional group id
-        :return: True if hte dataset exists, False otherwise
+        :return: True if the dataset exists, False otherwise
         """
         datasets = self.get_datasets(group_id)
 
