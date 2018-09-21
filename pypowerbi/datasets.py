@@ -13,6 +13,7 @@ class Datasets:
     tables_snippet = 'tables'
     rows_snippet = 'rows'
     parameters_snippet = 'parameters'
+    refreshes_snippet = 'refreshes'
 
     # json keys
     get_datasets_value_key = 'value'
@@ -273,9 +274,42 @@ class Datasets:
 
         # 200 is the only successful code, raise an exception on any other response code
         if response.status_code != 200:
-            raise HTTPError(response, f'Get Datasets request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Get Dataset parameters request returned http error: {response.status_code}')
 
         return json.loads(response.text)
+
+    def refresh_dataset(self, dataset_id, notify_option=None, group_id=None):
+        """
+        Refreshes a single dataset
+        :param dataset_id: The id of the dataset to refresh
+        :param notify_option: The optional notify_option to add in the request body
+        :param group_id: The optional id of the group
+        """
+        # group_id can be none, account for it
+        if group_id is None:
+            groups_part = '/'
+        else:
+            groups_part = f'/{self.groups_snippet}/{group_id}/'
+
+        # form the url
+        url = f'{self.base_url}{groups_part}/{self.datasets_snippet}/{dataset_id}/{self.refreshes_snippet}'
+
+        # form the headers
+        headers = self.client.auth_header
+
+        if notify_option is not None:
+            json_dict = {
+                'notifyOption': notify_option
+            }
+        else:
+            json_dict = None
+
+        # get the response
+        response = requests.post(url, headers=headers, json=json_dict)
+
+        # 200 is the only successful code, raise an exception on any other response code
+        if response.status_code != 202:
+            raise HTTPError(response, f'Refresh dataset request returned http error: {response.status_code}')
 
     @classmethod
     def datasets_from_get_datasets_response(cls, response):

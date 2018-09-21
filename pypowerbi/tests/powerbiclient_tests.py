@@ -598,3 +598,13 @@ class PowerBIAPITests(TestCase):
         groups = self.client.groups.get_groups()
         for group in groups:
             self.assertTrue(self.client.groups.has_group(group.id))
+
+    def test_refresh_dataset_method(self):
+        for group_id in self.group_ids:
+            self._test_refresh_dataset_method(self.client, group_id)
+
+    def _test_refresh_dataset_method(self, client, group_id):
+        dataset = self.add_mock_dataset(client, group_id=group_id)
+
+        client.datasets.refresh_dataset(dataset_id=dataset.id, group_id=group_id)
+        client.datasets.delete_dataset(dataset_id=dataset.id, group_id=group_id)
