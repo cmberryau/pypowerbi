@@ -55,7 +55,7 @@ class Groups:
 
         # 200 is the only successful code, raise an exception on any other response code
         if response.status_code != 200:
-            raise HTTPError(response, f'Get Groups request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Get Groups request returned http error: {response.josn()}')
 
         return self.groups_from_get_groups_response(response)
 

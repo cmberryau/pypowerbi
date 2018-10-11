@@ -63,7 +63,7 @@ class Imports:
         elif response.status_code == 409:
             raise NotImplementedError("Name conflict resolution not implemented yet")
         else:
-            raise HTTPError(response, f"Upload file failed with status code: {response.status_code}")
+            raise HTTPError(response, f"Upload file failed with status code: {response.json()}")
 
         return import_object
 
@@ -82,7 +82,7 @@ class Imports:
         if response.status_code == 200:
             import_object = self.import_from_response(response)
         else:
-            raise HTTPError(response, f"Get import failed with status code: {response.status_code}")
+            raise HTTPError(response, f"Get import failed with status code: {response.json()}")
 
         return import_object
 
@@ -101,6 +101,6 @@ class Imports:
         if response.status_code == 200:
             import_object = self.imports_from_response(response)
         else:
-            raise HTTPError(response, f"Get imports failed with status code: {response.status_code}")
+            raise HTTPError(response, f"Get imports failed with status code: {response.json()}")
 
         return import_object
