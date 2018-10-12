@@ -70,7 +70,7 @@ class Reports:
         if response.status_code == 200:
             reports = self.reports_from_get_reports_response(response)
         else:
-            raise HTTPError(response, f'Get reports request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Get reports request returned http error: {response.json()}')
 
         return reports
 
@@ -126,7 +126,7 @@ class Reports:
 
         # 200 - OK. Indicates success.
         if response.status_code != 200:
-            raise HTTPError(response, f'Clone report request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Clone report request returned http error: {response.json()}')
 
         return Report.from_dict(json.loads(response.text))
 
@@ -153,7 +153,7 @@ class Reports:
 
         # 200 - OK. Indicates success.
         if response.status_code != 200:
-            raise HTTPError(response, f'Delete report request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Delete report request returned http error: {response.json()}')
 
     def rebind_report(self, report_id, dataset_id, group_id=None):
         """
@@ -183,7 +183,7 @@ class Reports:
 
         # 200 - OK. Indicates success.
         if response.status_code != 200:
-            raise HTTPError(response, f'Rebind report request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Rebind report request returned http error: {response.json()}')
 
     def generate_token(self, report_id, token_request, group_id):
         """
@@ -207,7 +207,7 @@ class Reports:
 
         # 200 - OK. Indicates success.
         if response.status_code != 200:
-            raise HTTPError(response, f'Generate token for report request returned http error: {response.status_code}')
+            raise HTTPError(response, f'Generate token for report request returned http error: {response.json()}')
 
         return pypowerbi.client.EmbedToken.from_dict(json.loads(response.text))
 
