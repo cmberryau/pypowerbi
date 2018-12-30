@@ -59,3 +59,7 @@ dataset = Dataset(name='AnExampleDatasetName', tables=tables)
 # post your dataset!
 client.datasets.post_dataset(dataset)
 ```
+
+### Authentication & Authorization
+
+It uses `adal` library for authentication and authorization. If you need step by step way to do auth, please refer to [this example on Bitbucket](https://bitbucket.org/omnistream/powerbi-api-example/).
