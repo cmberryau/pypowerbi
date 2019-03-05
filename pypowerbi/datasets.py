@@ -312,6 +312,36 @@ class Datasets:
         if response.status_code != 202:
             raise HTTPError(response, f'Refresh dataset request returned http error: {response.json()}')
 
+    def get_dataset_gateway_datasources(self, dataset_id, group_id=None):
+        """
+                Gets the gateway datasources for a dataset
+                :param dataset_id: The id of the dataset
+                :param group_id: The optional id of the group
+                """
+        # group_id can be none, account for it
+        if group_id is None:
+            groups_part = '/'
+        else:
+            groups_part = f'/{self.groups_snippet}/{group_id}/'
+
+        # form the url
+        url = f'{self.base_url}{groups_part}{self.datasets_snippet}/{dataset_id}/datasources'
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.get(url, headers=headers)
+
+        # 200 is the only successful code, raise an exception on any other response code
+        if response.status_code != 200:
+            print(url)
+            raise HTTPError(response, f'Dataset gateway datasources request returned http error: {response.json()}')
+
+        data_sources = json.loads(response.text)["value"]
+
+        return data_sources
+
     def get_dataset_refresh_history(self, dataset_id, group_id=None, top=None):
         """
                 Gets the refresh history of a dataset
