@@ -1,6 +1,7 @@
 # -*- coding: future_fstrings -*-
 import requests
 import json
+from pypowerbi.utils import convert_datetime_fields
 
 from requests.exceptions import HTTPError
 from .dataset import *
@@ -310,6 +311,43 @@ class Datasets:
         # 200 is the only successful code, raise an exception on any other response code
         if response.status_code != 202:
             raise HTTPError(response, f'Refresh dataset request returned http error: {response.json()}')
+
+    def get_dataset_refresh_history(self, dataset_id, group_id=None, top=None):
+        """
+                Gets the refresh history of a dataset
+                :param dataset_id: The id of the dataset to refresh
+                :param group_id: The optional id of the group
+                :param top: The number of refreshes to retrieve. 5 will get the last 5 refreshes.
+                """
+        # group_id can be none, account for it
+        if group_id is None:
+            groups_part = '/'
+        else:
+            groups_part = f'/{self.groups_snippet}/{group_id}/'
+
+        # form the url
+        url = f'{self.base_url}{groups_part}/{self.datasets_snippet}/{dataset_id}/{self.refreshes_snippet}'
+
+        if top is not None:
+            url = f'{url}?$top={top}'
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.get(url, headers=headers)
+
+        # 200 is the only successful code, raise an exception on any other response code
+        if response.status_code != 200:
+            raise HTTPError(response, f'Dataset refresh history request returned http error: {response.json()}')
+
+        refresh_data = json.loads(response.text)["value"]
+
+        # Convert the date strings into datetime objects
+        time_fields = ['startTime', 'endTime']
+        refresh_data = convert_datetime_fields(refresh_data, time_fields)
+
+        return refresh_data
 
     @classmethod
     def datasets_from_get_datasets_response(cls, response):
