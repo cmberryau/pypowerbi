@@ -25,3 +25,6 @@ class Group:
         is_on_dedicated_capacity = dictionary.get(cls.is_on_dedicated_capacity_key, False)
 
         return cls(name, group_id, is_readonly, is_on_dedicated_capacity)
+
+    def __repr__(self):
+        return f'<Group {str(self.__dict__)}>'

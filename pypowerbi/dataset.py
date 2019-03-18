@@ -93,6 +93,9 @@ class Dataset:
                        is_effective_identity_roles_required=is_effective_identity_roles_required,
                        is_on_prem_gateway_required=is_on_prem_gateway_required)
 
+    def __repr__(self):
+        return f'<Dataset {str(self.__dict__)}>'
+
 
 class DatasetEncoder(json.JSONEncoder):
     def default(self, o):
@@ -139,6 +142,9 @@ class Table:
         self.name = name
         self.columns = columns
         self.measures = measures
+
+    def __repr__(self):
+        return f'<Table {str(self.__dict__)}>'
 
 
 class TableEncoder(json.JSONEncoder):
@@ -195,13 +201,16 @@ class Measure:
             measure_is_hidden = None
 
         return Measure(name=measure_name, expression=measure_expression, formatstring=measure_formatstring,
-                          is_hidden=measure_is_hidden)
+                       is_hidden=measure_is_hidden)
 
     def __init__(self, name, expression, formatstring=None, is_hidden=None):
         self.name = name
         self.expression = expression
         self.formatstring = formatstring
         self.is_hidden = is_hidden
+
+    def __repr__(self):
+        return f'<Measure {str(self.__dict__)}>'
 
 
 class MeasureEncoder(json.JSONEncoder):
@@ -228,6 +237,9 @@ class Column:
         self.name = name
         self.data_type = data_type
 
+    def __repr__(self):
+        return f'<Column {str(self.__dict__)}>'
+
 
 class ColumnEncoder(json.JSONEncoder):
     def default(self, o):
@@ -241,6 +253,9 @@ class Row:
     def __init__(self, **kwargs):
         for key in kwargs:
             setattr(self, key, kwargs[key])
+
+    def __repr__(self):
+        return f'<Row {str(self.__dict__)}>'
 
 
 class RowEncoder(json.JSONEncoder):

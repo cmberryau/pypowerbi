@@ -3,7 +3,7 @@
 import json
 from unittest import TestCase
 
-from pypowerbi.dataset import *
+from pypowerbi import *
 
 
 class DatasetTests(TestCase):

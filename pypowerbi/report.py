@@ -61,6 +61,9 @@ class Report:
 
         return Report(report_id, report_name, web_url, embed_url, dataset_id)
 
+    def __repr__(self):
+        return f'<Report {str(self.__dict__)}>'
+
 
 class ReportEncoder(json.JSONEncoder):
     def default(self, o):

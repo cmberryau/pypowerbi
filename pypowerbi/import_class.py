@@ -60,3 +60,6 @@ class Import:
 
         return cls(import_id, name, created_datetime, datasets, import_state,
                    reports, updated_datetime, source, connection_type)
+
+    def __repr__(self):
+        return f'<Import {str(self.__dict__)}>'
