@@ -19,7 +19,18 @@ class PowerBIClient:
     api_myorg_snippet = 'myorg'
 
     @staticmethod
-    def get_client(client_id, username, password, authority_url=None, resource_url=None, api_url=None):
+    def get_client_with_username_password(client_id, username, password, authority_url=None, resource_url=None, api_url=None):
+        """
+        Constructs a client with the option of using common defaults.
+
+        :param client_id: The Power BI Client ID
+        :param username: Username
+        :param password: Password
+        :param authority_url: The authority_url; defaults to 'https://login.windows.net/common'
+        :param resource_url: The resource_url; defaults to 'https://analysis.windows.net/powerbi/api'
+        :param api_url: The api_url: defaults to 'https://api.powerbi.com'
+        :return:
+        """
         if authority_url is None:
             authority_url = PowerBIClient.default_authority_url
 
