@@ -2,6 +2,7 @@
 
 import json
 import datetime
+import adal
 
 from .reports import Reports
 from .datasets import Datasets
@@ -12,9 +13,44 @@ from .groups import Groups
 class PowerBIClient:
     default_resource_url = 'https://analysis.windows.net/powerbi/api'
     default_api_url = 'https://api.powerbi.com'
+    default_authority_url = 'https://login.windows.net/common'
 
     api_version_snippet = 'v1.0'
     api_myorg_snippet = 'myorg'
+
+    @staticmethod
+    def get_client_with_username_password(client_id, username, password, authority_url=None, resource_url=None, api_url=None):
+        """
+        Constructs a client with the option of using common defaults.
+
+        :param client_id: The Power BI Client ID
+        :param username: Username
+        :param password: Password
+        :param authority_url: The authority_url; defaults to 'https://login.windows.net/common'
+        :param resource_url: The resource_url; defaults to 'https://analysis.windows.net/powerbi/api'
+        :param api_url: The api_url: defaults to 'https://api.powerbi.com'
+        :return:
+        """
+        if authority_url is None:
+            authority_url = PowerBIClient.default_authority_url
+
+        if resource_url is None:
+            resource_url = PowerBIClient.default_resource_url
+
+        if api_url is None:
+            api_url = PowerBIClient.default_api_url
+
+        context = adal.AuthenticationContext(authority=authority_url,
+                                             validate_authority=True,
+                                             api_version=None)
+
+        # get your authentication token
+        token = context.acquire_token_with_username_password(resource=resource_url,
+                                                             client_id=client_id,
+                                                             username=username,
+                                                             password=password)
+
+        return PowerBIClient(api_url, token)
 
     def __init__(self, api_url, token):
         self.api_url = api_url
