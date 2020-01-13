@@ -16,7 +16,7 @@ class ActivityLogs:
         self.group_part = "admin"   # This is always admin. Not really a group, but follows the
                                     # format of the rest of the library code
 
-    def get_activity_log(self, st, et=None, filter=None):
+    def get_activity_logs(self, st, et=None, filter=None):
         """
         Get's the activity log for the specified date or date range. If et is None, it will get all logs (from midnight
         to 11:59:59 UTC) for the date specified by st. If et is set, it will retrieve logs from st-et. Note that the

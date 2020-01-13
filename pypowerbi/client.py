@@ -8,6 +8,7 @@ from .reports import Reports
 from .datasets import Datasets
 from .imports import Imports
 from .groups import Groups
+from .activity_logs import ActivityLogs
 
 
 class PowerBIClient:
@@ -59,6 +60,7 @@ class PowerBIClient:
         self.reports = Reports(self)
         self.imports = Imports(self)
         self.groups = Groups(self)
+        self.activity_logs = ActivityLogs(self)
 
     @property
     def auth_header(self):
