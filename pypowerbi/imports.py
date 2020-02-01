@@ -47,12 +47,20 @@ class Imports:
         if nameconflict is not None:
             url = url + f'&{self.nameconflict_snippet}={nameconflict}'
 
-        with open(filename, 'rb') as file:
-            headers = self.client.auth_header
+        headers = self.client.auth_header
+        try:
+            with open(filename, 'rb') as file_obj:
+                response = requests.post(url, headers=headers,
+                                        files={
+                                            'file': file_obj,
+                                        })
+        except TypeError:
+            # assume filename is a file-like object already
             response = requests.post(url, headers=headers,
-                                     files={
-                                         'file': file,
-                                     })
+                            files={
+                                'file': filename,
+                            })
+
         # 200 OK
         if response.status_code == 200:
             import_object = self.import_from_response(response)

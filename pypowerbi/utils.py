@@ -8,6 +8,7 @@ This file contains helper and utility functions used elsewhere in the library.
 
 # Datetime's come in from PowerBI in the format 2019-03-05T03:09:31.493Z
 _date_fmt_str = '%Y-%m-%dT%H:%M:%S.%fZ'
+_date_fmt_str2 = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def date_from_powerbi_str(dstr):
@@ -17,8 +18,11 @@ def date_from_powerbi_str(dstr):
     :param dstr: A String retrieved from the Power BI Service that's a datetime
     :return: A Python datetime object generated from the parameter
     """
-    return datetime.datetime.strptime(dstr, _date_fmt_str)
-
+    if "." in dstr:
+        return datetime.datetime.strptime(dstr, _date_fmt_str)
+    else:
+        # Fractional seconds are not zero padded in the API and will not be included at all if 0, thus the second format
+        return datetime.datetime.strptime(dstr, _date_fmt_str2)
 
 def convert_datetime_fields(list_of_dicts, fields_to_convert):
     """

@@ -14,6 +14,8 @@ class Datasets:
     tables_snippet = 'tables'
     rows_snippet = 'rows'
     parameters_snippet = 'parameters'
+    set_parameters_snippet = 'Default.UpdateParameters'
+    bind_gateway_snippet = 'Default.BindToGateway'
     refreshes_snippet = 'refreshes'
 
     # json keys
@@ -279,6 +281,32 @@ class Datasets:
 
         return json.loads(response.text)
 
+    def set_dataset_parameters(self, dataset_id, params, group_id=None):
+        """
+        Sets parameters for a single dataset
+        https://docs.microsoft.com/en-gb/rest/api/power-bi/datasets/updateparametersingroup
+        :param dataset_id: The id of the dataset which you want to update
+        :param params: Dict of parameters to set on the dataset
+        :param group_id: The optional id of the group to get the dataset's parameters
+        :return: The dataset parameters returned by the API
+        """
+        if group_id is None:
+            groups_part = '/'
+        else:
+            groups_part = f'/{self.groups_snippet}/{group_id}/'
+
+        url = f'{self.base_url}{groups_part}/{self.datasets_snippet}/{dataset_id}/{self.set_parameters_snippet}'
+
+        update_details = [{"name": k, "newValue": str(v)} for k, v in params.items()]
+        body = {"updateDetails": update_details}
+
+        headers = self.client.auth_header
+
+        response = requests.post(url, headers=headers, json=body)
+
+        if response.status_code != 200:
+            raise HTTPError(response, f'Setting dataset parameters failed with http error: {response.json()}')
+
     def refresh_dataset(self, dataset_id, notify_option=None, group_id=None):
         """
         Refreshes a single dataset
@@ -341,6 +369,29 @@ class Datasets:
         data_sources = json.loads(response.text)["value"]
 
         return data_sources
+
+    def bind_dataset_gateway(self, dataset_id, gateway_id, group_id=None):
+        """
+                Binds a dataset to a gateway
+                https://docs.microsoft.com/en-gb/rest/api/power-bi/datasets/bindtogatewayingroup
+                :param dataset_id: The id of the dataset
+                :param gateway_id: The id of the gateway
+                :param group_id: The optional id of the group
+                """
+        if group_id is None:
+            groups_part = '/'
+        else:
+            groups_part = f'/{self.groups_snippet}/{group_id}/'
+
+        url = f'{self.base_url}{groups_part}/{self.datasets_snippet}/{dataset_id}/{self.bind_gateway_snippet}'
+
+        body = {"gatewayObjectId": gateway_id}
+        headers = self.client.auth_header
+
+        response = requests.post(url, headers=headers, json=body)
+
+        if response.status_code != 200:
+            raise HTTPError(response, f'Binding gateway to dataset failed with http error: {response.json()}')
 
     def get_dataset_refresh_history(self, dataset_id, group_id=None, top=None):
         """
