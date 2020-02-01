@@ -149,3 +149,4 @@ fabric.properties
 
 
 # End of https://www.gitignore.io/api/pycharm
+/ExampleScripts/creds.json
