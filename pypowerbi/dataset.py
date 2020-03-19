@@ -232,10 +232,12 @@ class MeasureEncoder(json.JSONEncoder):
 class Column:
     name_key = 'name'
     datatype_key = 'dataType'
+    formatstring_key = 'formatString'
 
-    def __init__(self, name, data_type):
+    def __init__(self, name, data_type, formatstring=None):
         self.name = name
         self.data_type = data_type
+        self.formatstring = formatstring
 
     def __repr__(self):
         return f'<Column {str(self.__dict__)}>'
@@ -243,10 +245,15 @@ class Column:
 
 class ColumnEncoder(json.JSONEncoder):
     def default(self, o):
-        return {
+        json_dict = {
             Column.name_key: o.name,
             Column.datatype_key: o.data_type
         }
+
+        if o.formatstring is not None:
+            json_dict[Column.formatstring_key] = o.formatstring
+
+        return json_dict
 
 
 class Row:
