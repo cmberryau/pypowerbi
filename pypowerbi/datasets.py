@@ -194,6 +194,36 @@ class Datasets:
 
         return self.tables_from_get_tables_response(response)
 
+    def put_table(self, dataset_id, table_name, table, group_id=None):
+        """
+        Updates the metadata and schema for the specified table within the specified dataset from "My Workspace".
+        https://docs.microsoft.com/en-us/rest/api/power-bi/pushdatasets/datasets_puttable
+        :param dataset_id: The id of the dataset to put the table in
+        :param table_name: The name of the table to put
+        :param table: The table object to update
+        :param group_id: The optional id of the group to put the table in
+        """
+        # group_id can be none, account for it
+        if group_id is None:
+            groups_part = '/'
+        else:
+            groups_part = f'/{self.groups_snippet}/{group_id}/'
+
+            # form the url
+            url = f'{self.base_url}{groups_part}/{self.datasets_snippet}/{dataset_id}/' \
+                  f'{self.tables_snippet}/{table_name}'
+            # form the headers
+            headers = self.client.auth_header
+            # form the json dict
+            json_dict = TableEncoder().default(table)
+
+            # get the response
+            response = requests.post(url, headers=headers, json=json_dict)
+
+            # 200 is the only successful code
+            if response.status_code != 200:
+                raise HTTPError(response, f'Post row request returned http error: {response.json()}')
+
     def post_rows(self, dataset_id, table_name, rows, group_id=None):
         """
         Posts rows to a table in a given dataset
