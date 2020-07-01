@@ -113,6 +113,7 @@ class Table:
     name_key = 'name'
     columns_key = 'columns'
     measures_key = 'measures'
+    rows_key = 'rows'
 
     @classmethod
     def from_dict(cls, dictionary):
@@ -130,18 +131,25 @@ class Table:
         else:
             raise RuntimeError('Table dict has no name key')
 
+        # columns are optional
+        if Table.columns_key in dictionary:
+            table_columns = [Table.from_dict(x) for x in dictionary[Table.columns_key]]
+        else:
+            table_columns = None
+
         # measures are optional
         if Table.measures_key in dictionary:
             table_measures = [Table.from_dict(x) for x in dictionary[Table.measures_key]]
         else:
             table_measures = None
 
-        return Table(name=table_name, measures=table_measures)
+        return Table(name=table_name, columns=table_columns, measures=table_measures)
 
-    def __init__(self, name, columns=None, measures=None):
+    def __init__(self, name, columns, measures=None, rows=None):
         self.name = name
         self.columns = columns
         self.measures = measures
+        self.rows = rows
 
     def __repr__(self):
         return f'<Table {str(self.__dict__)}>'
@@ -160,6 +168,10 @@ class TableEncoder(json.JSONEncoder):
         if o.measures is not None:
             measure_encoder = MeasureEncoder()
             json_dict[Table.measures_key] = [measure_encoder.default(x) for x in o.measures]
+
+        if o.rows is not None:
+            row_encoder = RowEncoder()
+            json_dict[Table.row_key] = [row_encoder.default(x) for x in o.rows]
 
         return json_dict
 
