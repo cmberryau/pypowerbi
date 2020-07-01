@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pypowerbi',
-      version='0.24',
+      version='0.25',
       description='A python library for Microsoft\'s PowerBI',
       url='http://github.com/cmberryau/pypowerbi',
       author='Chris Berry',
