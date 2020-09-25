@@ -45,8 +45,8 @@ class Groups:
         """
         Fetches all groups that the client has access to
         :param filter_str: OData filter string to filter results
-        :param top: OData top parameter to limit to the top n results
-        :param skip: OData skip parameter to skip the first n results
+        :param top: int > 0, OData top parameter to limit to the top n results
+        :param skip: int > 0,  OData skip parameter to skip the first n results
         :return: list
             The list of groups
         """
