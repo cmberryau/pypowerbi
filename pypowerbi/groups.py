@@ -1,6 +1,7 @@
 # -*- coding: future_fstrings -*-
 import requests
 import json
+import urllib.parse
 
 from requests.exceptions import HTTPError
 from .group import Group
@@ -40,14 +41,35 @@ class Groups:
 
         return False
 
-    def get_groups(self):
+    def get_groups(self, filter_str=None, top=None, skip=None):
         """
         Fetches all groups that the client has access to
+        :param filter_str: OData filter string to filter results
+        :param top: int > 0, OData top parameter to limit to the top n results
+        :param skip: int > 0,  OData skip parameter to skip the first n results
         :return: list
             The list of groups
         """
+        query_parameters = []
+
+        if filter_str:
+            query_parameters.append(f'$filter={urllib.parse.quote(filter_str)}')
+
+        if top:
+            stripped_top = json.dumps(top).strip('"')
+            query_parameters.append(f'$top={urllib.parse.quote(stripped_top)}')
+
+        if skip:
+            stripped_skip = json.dumps(skip).strip('"')
+            query_parameters.append(f'$skip={urllib.parse.quote(stripped_skip)}')
+
         # form the url
         url = f'{self.base_url}/{self.groups_snippet}'
+
+        # add query parameters to url if any
+        if len(query_parameters) > 0:
+            url += f'?{str.join("&", query_parameters)}'
+
         # form the headers
         headers = self.client.auth_header
         # get the response
