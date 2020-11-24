@@ -18,6 +18,44 @@ class Groups:
         self.client = client
         self.base_url = f'{self.client.api_url}/{self.client.api_version_snippet}/{self.client.api_myorg_snippet}'
 
+    def create_group(self, name, workspace_v2=False):
+        """Creates a new workspace
+
+        :param name: The name of the new group to create
+        :param workspace_v2: Create a workspace V2
+        :return: Group
+            The newly created group
+        """
+        if name is None or name == "":
+            raise ValueError("Group name cannot be empty or None")
+
+        body = {'name': name}
+
+        # create url
+        url = f'{self.base_url}/{self.groups_snippet}'
+
+        uri_parameters = []
+
+        if workspace_v2:
+            stripped_workspace_v2 = json.dumps(workspace_v2).strip('"')
+            uri_parameters.append(f'workspaceV2={urllib.parse.quote(stripped_workspace_v2)}')
+
+        # add query parameters to url if any
+        if len(uri_parameters) > 0:
+            url += f'?{str.join("&", uri_parameters)}'
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.post(url, headers=headers, json=body)
+
+        # 200 is the only successful code, raise an exception on any other response code
+        if response.status_code != 200:
+            raise HTTPError(f'Add group request returned the following http error: {response.json()}')
+
+        return self.groups_from_get_groups_response(response)[0]
+
     def count(self):
         """
         Evaluates the number of groups that the client has access to
