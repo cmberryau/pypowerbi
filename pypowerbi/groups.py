@@ -26,9 +26,11 @@ class Groups:
         :return: Group
             The newly created group
         """
+        # validate request body
         if name is None or name == "":
             raise ValueError("Group name cannot be empty or None")
 
+        # define request body
         body = {'name': name}
 
         # create url
