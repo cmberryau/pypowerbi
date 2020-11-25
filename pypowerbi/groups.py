@@ -56,7 +56,19 @@ class Groups:
         if response.status_code != 200:
             raise HTTPError(f'Add group request returned the following http error: {response.json()}')
 
-        return self.groups_from_get_groups_response(response)[0]
+        return self.create_group_from_create_group_response(response)
+
+    @staticmethod
+    def create_group_from_create_group_response(response):
+        """Creates a Group object from the response to a create_group call
+
+        :param response:
+            The http response object
+        :return:
+            Group object describing the newly created group
+        """
+        group_dict = json.loads(response.text)
+        return Group.from_dict(group_dict)
 
     def count(self):
         """
