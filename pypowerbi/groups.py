@@ -5,11 +5,13 @@ import urllib.parse
 
 from requests.exceptions import HTTPError
 from .group import Group
+from .group_user import GroupUser
 
 
 class Groups:
     # url snippets
     groups_snippet = 'groups'
+    users_snippet = 'users'
 
     # json keys
     get_reports_value_key = 'value'
@@ -69,6 +71,39 @@ class Groups:
         """
         group_dict = json.loads(response.text)
         return Group.from_dict(group_dict)
+
+    def add_group_user(self, group_id, group_user):
+        """Adds a user to a group
+
+        :param group_id:
+            str - id of the group to add the user to
+        :param group_user:
+            GroupUser - Description of the user that should be added to the group
+        :return:
+            None
+        """
+        # validate request body
+        if not isinstance(group_user, GroupUser):
+            raise TypeError("group_user should be of type group_user.GroupUser !")
+
+        # define request body
+        body = group_user.as_set_values_dict()
+
+        # create url
+        stripped_group_id = json.dumps(group_id).strip('"')
+        url = f'{self.base_url}/{self.groups_snippet}/{urllib.parse.quote(stripped_group_id)}/{self.users_snippet}'
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.post(url, headers=headers, json=body)
+
+        # 200 is the only successful code, raise an exception on any other response code
+        if response.status_code != 200:
+            # add group user requests return an empty body; get the error from headers instead
+            error_info = response.headers['x-powerbi-error-info']
+            raise HTTPError(f'Add group request returned the following http error: {error_info}')
 
     def count(self):
         """
