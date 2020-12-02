@@ -1,8 +1,11 @@
 # -*- coding: future_fstrings -*-
+import json
+from enum import Enum
+
 
 class GatewayPublicKey:
-    exponent_key = "exponent"
-    modulus_key = "modulus"
+    exponent_key = 'exponent'
+    modulus_key = 'modulus'
 
     def __init__(self, exponent, modulus):
         """Constructs a GatewayPublicKey object
@@ -83,3 +86,73 @@ class Gateway:
 
     def __repr__(self):
         return f'<Gateway id={self.id} name={self.name}>'
+
+
+class CredentialType(Enum):
+    ANONYMOUS = 'Anonymous'
+    BASIC = 'Basic'
+    KEY = 'Key'
+    OAUTH2 = 'OAuth2'
+    WINDOWS = 'Windows'
+
+
+class GatewayDatasource:
+    gateway_datasource_id_key = 'id'
+    gateway_id_key = 'gatewayId'
+    credential_type_key = 'credentialType'
+    datasource_name_key = 'datasourceName'
+    datasource_type_key = 'datasourceType'
+    connection_details_key = 'connectionDetails'
+
+    def __init__(
+        self,
+        gateway_datasource_id,
+        gateway_id,
+        credential_type,
+        datasource_name,
+        datasource_type,
+        connection_details
+    ):
+        """Constructs a GatewayDatasource object
+
+        :param gateway_datasource_id: str - The unique id for this datasource
+        :param gateway_id: str - The associated gateway id
+        :param credential_type: CredentialType - Type of datasource credentials
+        :param datasource_name: str - The name of the datasource
+        :param datasource_type: str - The type of the datasource
+        :param connection_details: str - Connection details in json format
+        """
+        self.id = gateway_datasource_id
+        self.gateway_id = gateway_id
+        self.credential_type = credential_type
+        self.datasource_name = datasource_name
+        self.datasource_type = datasource_type
+        self.connection_details = connection_details
+
+    @classmethod
+    def from_dict(cls, dictionary):
+        """Constructs a GatewayDatasource object from a dict
+
+        :param dictionary: Dictionary describing the gatewayDatasource
+        :return: GatewayDatasource based on the dictionary
+        :rtype: GatewayDatasource
+        """
+        gateway_datasource_id = dictionary.get(cls.gateway_datasource_id_key)
+        if gateway_datasource_id is None:
+            raise RuntimeError("GatewayDatasource dictionary has no id key")
+
+        gateway_id = dictionary.get(cls.gateway_id_key)
+        # use round brackets below to access enum by value
+        credential_type = CredentialType(dictionary.get(cls.credential_type_key))
+        datasource_name = dictionary.get(cls.datasource_name_key)
+        datasource_type = dictionary.get(cls.datasource_type_key)
+        connection_details = json.dumps(dictionary.get(cls.connection_details_key))
+
+        return cls(
+            gateway_datasource_id,
+            gateway_id,
+            credential_type,
+            datasource_name,
+            datasource_type,
+            connection_details
+        )
