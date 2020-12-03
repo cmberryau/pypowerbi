@@ -16,6 +16,12 @@ class PrincipalType(Enum):
 
 
 class GroupUser:
+    group_user_access_right_key = 'groupUserAccessRight'
+    email_address_key = 'emailAddress'
+    display_name_key = 'displayName'
+    identifier_key = 'identifier'
+    principal_type_key = 'principalType'
+
     def __init__(
         self,
         group_user_access_right,
@@ -47,18 +53,18 @@ class GroupUser:
         group_user_dict = dict()
 
         if self.group_user_access_right:
-            group_user_dict["groupUserAccessRight"] = self.group_user_access_right.value
+            group_user_dict[self.group_user_access_right_key] = self.group_user_access_right.value
 
         if self.email_address:
-            group_user_dict["emailAddress"] = self.email_address
+            group_user_dict[self.email_address_key] = self.email_address
 
         if self.display_name:
-            group_user_dict["displayName"] = self.display_name
+            group_user_dict[self.display_name_key] = self.display_name
 
         if self.identifier:
-            group_user_dict["identifier"] = self.identifier
+            group_user_dict[self.identifier_key] = self.identifier
 
         if self.principal_type:
-            group_user_dict["principalType"] = self.principal_type.value
+            group_user_dict[self.principal_type_key] = self.principal_type.value
 
         return group_user_dict
