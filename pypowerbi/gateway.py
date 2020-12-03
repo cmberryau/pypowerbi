@@ -82,7 +82,7 @@ class Gateway:
         public_key = GatewayPublicKey.from_dict(dictionary.get(cls.public_key_key))
         status = dictionary.get(cls.status_key)
 
-        return cls(id, name, gateway_type, gateway_annotation, public_key, status)
+        return cls(gateway_id, name, gateway_type, gateway_annotation, public_key, status)
 
     def __repr__(self):
         return f'<Gateway id={self.id} name={self.name}>'
