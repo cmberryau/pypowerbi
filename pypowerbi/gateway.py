@@ -156,3 +156,6 @@ class GatewayDatasource:
             datasource_type,
             connection_details
         )
+
+    def __repr__(self):
+        return f'<GatewayDatasource id={self.id} name={self.datasource_name} type={self.datasource_type}>'
