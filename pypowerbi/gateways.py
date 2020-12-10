@@ -6,7 +6,6 @@ import json
 
 from requests.exceptions import HTTPError
 
-from . import PowerBIClient
 from .gateway import Gateway, GatewayDatasource, DatasourceUser
 from .base import Deserializable
 
@@ -20,7 +19,7 @@ class Gateways:
     # json keys
     odata_response_wrapper_key = 'value'
 
-    def __init__(self, client: PowerBIClient):
+    def __init__(self, client):
         self.client = client
         self.base_url = f'{self.client.api_url}/{self.client.api_version_snippet}/{self.client.api_myorg_snippet}'
 
