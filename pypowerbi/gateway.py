@@ -210,3 +210,6 @@ class DatasourceUser(Deserializable):
             else principal_type_value
 
         return cls(datasource_user_access_right, email_address, display_name, datasource_user_id, principal_type)
+
+    def __repr__(self) -> str:
+        return f'<DatasourceUser id={self.identifier} type={self.principal_type.name} display_name={self.display_name}>'
