@@ -1,29 +1,35 @@
 # -*- coding: future_fstrings -*-
 import json
-from enum import Enum
+from typing import Dict, Union, Optional
+from .base import Deserializable
+from .enums import CredentialType, DatasourceUserAccessRight, PrincipalType
 
 
-class GatewayPublicKey:
+class GatewayPublicKey(Deserializable):
     exponent_key = 'exponent'
     modulus_key = 'modulus'
 
-    def __init__(self, exponent, modulus):
+    def __init__(
+            self,
+            exponent: str,
+            modulus: str
+    ):
         """Constructs a GatewayPublicKey object
 
-        :param exponent: str - the exponent of the public key
-        :param modulus: str - the modulus of the public key
+        :param exponent: The exponent of the public key
+        :param modulus: The modulus of the public key
         """
         self.exponent = exponent
         self.modulus = modulus
 
-    def as_dict(self):
+    def as_dict(self) -> Dict[str, str]:
         return {
             self.exponent_key: self.exponent,
             self.modulus_key: self.modulus
         }
 
     @classmethod
-    def from_dict(cls, dictionary):
+    def from_dict(cls, dictionary: Dict[str, str]) -> 'GatewayPublicKey':
         """Constructs a GatewayPublicKey from a dictionary
 
         :param dictionary: the dictionary describing the GatewayPublicKey
@@ -35,11 +41,11 @@ class GatewayPublicKey:
 
         return cls(exponent, modulus)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<GatewayPublicKey exponent={self.exponent} modulus={self.modulus}>'
 
 
-class Gateway:
+class Gateway(Deserializable):
     id_key = 'id'
     name_key = 'name'
     type_key = 'type'
@@ -47,15 +53,23 @@ class Gateway:
     public_key_key = 'publicKey'
     status_key = 'gatewayStatus'
 
-    def __init__(self, gateway_id, name, gateway_type, gateway_annotation, public_key, status):
+    def __init__(
+            self,
+            gateway_id: str,
+            name: str,
+            gateway_type: str,
+            gateway_annotation: str,
+            public_key: GatewayPublicKey,
+            status: str
+    ):
         """Constructs a Gateway object
 
-        :param gateway_id: str - The gateway id
-        :param name: str - The gateway name
-        :param gateway_type: str - The gateway type
-        :param gateway_annotation: str - Gateway metadata in json format
-        :param public_key: GatewayPublicKey - The gateway public key
-        :param status: str - The gateway connectivity status
+        :param gateway_id: The gateway id
+        :param name: The gateway name
+        :param gateway_type: The gateway type
+        :param gateway_annotation: Gateway metadata in json format
+        :param public_key: The gateway public key
+        :param status: The gateway connectivity status
         """
         self.id = gateway_id
         self.name = name
@@ -65,7 +79,7 @@ class Gateway:
         self.status = status
 
     @classmethod
-    def from_dict(cls, dictionary):
+    def from_dict(cls, dictionary: Dict[str, Union[str, Dict[str, str]]]) -> 'Gateway':
         """Constructs a Gateway object from a dict
 
         :param dictionary: Dictionary describing the gateway
@@ -84,19 +98,11 @@ class Gateway:
 
         return cls(gateway_id, name, gateway_type, gateway_annotation, public_key, status)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<Gateway id={self.id} name={self.name}>'
 
 
-class CredentialType(Enum):
-    ANONYMOUS = 'Anonymous'
-    BASIC = 'Basic'
-    KEY = 'Key'
-    OAUTH2 = 'OAuth2'
-    WINDOWS = 'Windows'
-
-
-class GatewayDatasource:
+class GatewayDatasource(Deserializable):
     gateway_datasource_id_key = 'id'
     gateway_id_key = 'gatewayId'
     credential_type_key = 'credentialType'
@@ -105,22 +111,22 @@ class GatewayDatasource:
     connection_details_key = 'connectionDetails'
 
     def __init__(
-        self,
-        gateway_datasource_id,
-        gateway_id,
-        credential_type,
-        datasource_name,
-        datasource_type,
-        connection_details
+            self,
+            gateway_datasource_id: str,
+            gateway_id: str,
+            credential_type: CredentialType,
+            datasource_name: str,
+            datasource_type: str,
+            connection_details: str
     ):
         """Constructs a GatewayDatasource object
 
-        :param gateway_datasource_id: str - The unique id for this datasource
-        :param gateway_id: str - The associated gateway id
-        :param credential_type: CredentialType - Type of datasource credentials
-        :param datasource_name: str - The name of the datasource
-        :param datasource_type: str - The type of the datasource
-        :param connection_details: str - Connection details in json format
+        :param gateway_datasource_id: The unique id for this datasource
+        :param gateway_id: The associated gateway id
+        :param credential_type: Type of datasource credentials
+        :param datasource_name: The name of the datasource
+        :param datasource_type: The type of the datasource
+        :param connection_details: Connection details in json format
         """
         self.id = gateway_datasource_id
         self.gateway_id = gateway_id
@@ -130,7 +136,7 @@ class GatewayDatasource:
         self.connection_details = connection_details
 
     @classmethod
-    def from_dict(cls, dictionary):
+    def from_dict(cls, dictionary: Dict[str, str]) -> 'GatewayDatasource':
         """Constructs a GatewayDatasource object from a dict
 
         :param dictionary: Dictionary describing the gatewayDatasource

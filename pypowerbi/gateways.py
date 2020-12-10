@@ -1,9 +1,14 @@
 # -*- coding: future_fstrings -*-
+from typing import List, Type, Any
+
 import requests
 import json
 
 from requests.exceptions import HTTPError
-from .gateway import Gateway, GatewayDatasource
+
+from . import PowerBIClient
+from .gateway import Gateway, GatewayDatasource, DatasourceUser
+from .base import Deserializable
 
 
 class Gateways:
@@ -14,11 +19,11 @@ class Gateways:
     # json keys
     odata_response_wrapper_key = 'value'
 
-    def __init__(self, client):
+    def __init__(self, client: PowerBIClient):
         self.client = client
         self.base_url = f'{self.client.api_url}/{self.client.api_version_snippet}/{self.client.api_myorg_snippet}'
 
-    def get_gateways(self):
+    def get_gateways(self) -> List[Gateway]:
         """Fetches all gateways the user is an admin for"""
 
         # form the url
@@ -40,23 +45,7 @@ class Gateways:
     def gateways_from_get_gateways_response(cls, response):
         """Creates a list of gateways from a http response object
 
-        :param response:
-            The http response object
-        :return: list
-            The list of gateways
-        """
-
-        # parse json response into a dict
-        response_dict = json.loads(response.text)
-
-        # Add parsed Gateway objects to list
-        gateways = []
-        for entry in response_dict[cls.odata_response_wrapper_key]:
-            gateways.append(Gateway.from_dict(entry))
-
-        return gateways
-
-    def get_datasources(self, gateway_id):
+    def get_datasources(self, gateway_id: str) -> List[GatewayDatasource]:
         """Returns a list of datasources from the specified gateway
 
         :param gateway_id: The gateway id to return responses for
