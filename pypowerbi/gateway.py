@@ -165,3 +165,48 @@ class GatewayDatasource(Deserializable):
 
     def __repr__(self):
         return f'<GatewayDatasource id={self.id} name={self.datasource_name} type={self.datasource_type}>'
+
+
+class DatasourceUser(Deserializable):
+    datasource_access_right_key = 'datasourceAccessRight'
+    email_address_key = 'emailAddress'
+    display_name_key = 'displayName'
+    identifier_key = 'identifier'
+    principal_type_key = 'principalType'
+
+    def __init__(
+        self,
+        datasource_access_right: DatasourceUserAccessRight,
+        email_address: str = "",
+        display_name: str = "",
+        identifier: str = "",
+        principal_type: Optional[PrincipalType] = None
+    ):
+        """Constructs a DataSourceUser object
+
+        :param datasource_access_right: The user access rights for the datasource
+        :param email_address: Email address of the user
+        :param display_name: Display name of the principal
+        :param identifier: Identifier of the principal
+        :param principal_type: The principal type
+        """
+        self.datasource_access_right = datasource_access_right
+        self.email_address = email_address
+        self.display_name = display_name
+        self.identifier = identifier
+        self.principal_type = principal_type
+
+    @classmethod
+    def from_dict(cls, dictionary: Dict[str, str]) -> 'DatasourceUser':
+        datasource_user_id = dictionary.get(cls.identifier_key)
+        if datasource_user_id is None:
+            raise RuntimeError("DatasourceUser dictionary has no identifier key")
+
+        datasource_user_access_right = DatasourceUserAccessRight(dictionary.get(cls.datasource_access_right_key))
+        email_address = dictionary.get(cls.email_address_key, "")
+        display_name = dictionary.get(cls.display_name_key, "")
+        principal_type_value = dictionary.get(cls.principal_type_key, None)
+        principal_type = PrincipalType(principal_type_value) if principal_type_value is not None \
+            else principal_type_value
+
+        return cls(datasource_user_access_right, email_address, display_name, datasource_user_id, principal_type)

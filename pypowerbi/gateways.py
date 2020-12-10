@@ -15,6 +15,7 @@ class Gateways:
     # url snippets
     gateways_snippet = 'gateways'
     datasources_snippet = 'datasources'
+    users_snippet = 'users'
 
     # json keys
     odata_response_wrapper_key = 'value'
@@ -63,6 +64,28 @@ class Gateways:
             raise HTTPError(response, f'Get Gateway Datasources request returned http error: {response.json()}')
 
         return self._models_from_get_multiple_response(response, GatewayDatasource)
+
+    def get_datasource_users(self, gateway_id: str, datasource_id: str) -> List[DatasourceUser]:
+        """Returns a list of users who have access to the specified datasource
+
+        :param gateway_id: The gateway id
+        :param datasource_id: The datasource id
+        """
+        # form the url
+        url = f'{self.base_url}/{self.gateways_snippet}/{gateway_id}' \
+              f'/{self.datasources_snippet}/{datasource_id}/{self.users_snippet}'
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.get(url, headers=headers)
+
+        # 200 is the only successful code, raise an exception on any other response code
+        if response.status_code != 200:
+            raise HTTPError(response, f'Get Datasource Users request returned http error: {response.json()}')
+
+        return self._models_from_get_multiple_response(response, DatasourceUser)
 
     @classmethod
     def _models_from_get_multiple_response(
