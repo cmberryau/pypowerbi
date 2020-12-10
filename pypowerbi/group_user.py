@@ -1,20 +1,4 @@
-from enum import Enum
-
-
-class GroupUserAccessRight(Enum):
-    NONE = 'None'
-    MEMBER = 'Member'
-    ADMIN = 'Admin'
-    CONTRIBUTOR = 'Contributor'
-    VIEWER = 'Viewer'
-
-
-class PrincipalType(Enum):
-    USER = "User"
-    GROUP = "Group"
-    APP = "App"
-
-
+# -*- coding: future_fstrings -*-
 class GroupUser:
     group_user_access_right_key = 'groupUserAccessRight'
     email_address_key = 'emailAddress'
