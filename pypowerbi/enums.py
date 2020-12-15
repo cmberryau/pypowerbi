@@ -32,3 +32,20 @@ class CredentialType(Enum):
     KEY = 'Key'
     OAUTH2 = 'OAuth2'
     WINDOWS = 'Windows'
+
+
+class EncryptedConnection(Enum):
+    ENCRYPTED = 'Encrypted'
+    NOT_ENCRYPTED = 'NotEncrypted'
+
+
+class EncryptionAlgorithm(Enum):
+    NONE = 'None'
+    RSA_OAEP = 'RSA-OAEP'
+
+
+class PrivacyLevel(Enum):
+    NONE = 'None'
+    PUBLIC = 'Public'
+    ORGANIZATIONAL = 'Organizational'
+    PRIVATE = 'Private'

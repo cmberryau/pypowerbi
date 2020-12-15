@@ -1,11 +1,11 @@
-# -*- coding: future_fstrings -*-
-
 import json
 from unittest import TestCase
 
 import datetime
 
 from pypowerbi import utils
+from pypowerbi.utils import CredentialsBuilder
+
 
 class UtilsTests(TestCase):
     def test_date_from_powerbi_str(self):
@@ -65,3 +65,30 @@ class UtilsTests(TestCase):
         for converted, target in zip(converted_list, target_list):
             self.assertEqual(converted, target)
 
+    # The following tests are based on the examples found here:
+    # https://docs.microsoft.com/en-us/rest/api/power-bi/gateways/updatedatasource#examples
+    def test_get_anonymous_credentials(self):
+        actual = CredentialsBuilder.get_anonymous_credentials()
+        expected = r'{\"credentialData\":\"\"}'
+        self.assertEqual(expected, actual)
+
+    def test_get_basic_credentials(self):
+        actual = CredentialsBuilder.get_basic_credentials("john", "*****")
+        expected = r'{\"credentialData\":[{\"name\":\"username\", \"value\":\"john\"}, {\"name\":\"password\", \"value\":\"*****\"}]}'
+        self.assertEqual(expected, actual)
+
+    def test_get_key_credentials(self):
+        actual = CredentialsBuilder.get_key_credentials("ec....LA=")
+        expected = r'{\"credentialData\":[{\"name\":\"key\", \"value\":\"ec....LA=\"}]}'
+        self.assertEqual(expected, actual)
+
+    def test_get_o_auth_2_credentials(self):
+        actual = CredentialsBuilder.get_o_auth_2_credentials("eyJ0....fwtQ")
+        expected = r'{\"credentialData\":[{\"name\":\"accessToken\", \"value\":\"eyJ0....fwtQ\"}]}'
+        self.assertEqual(expected, actual)
+
+    def test_get_windows_credentials(self):
+        actual = CredentialsBuilder.get_windows_credentials(r'contoso\john', "*****")
+        expected = r'{\"credentialData\":[{\"name\":\"username\", \"value\":\"contoso\\john\"}, {\"name\":\"password\", \"value\":\"*****\"}]}'
+
+        self.assertEqual(expected, actual)

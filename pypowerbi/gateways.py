@@ -6,7 +6,7 @@ import json
 
 from requests.exceptions import HTTPError
 
-from .gateway import Gateway, GatewayDatasource, DatasourceUser
+from .gateway import Gateway, GatewayDatasource, DatasourceUser, PublishDatasourceToGatewayRequest
 from .base import Deserializable
 
 
@@ -86,11 +86,39 @@ class Gateways:
 
         return self._models_from_get_multiple_response(response, DatasourceUser)
 
+    def create_datasource(
+        self,
+        gateway_id: str,
+        datasource_to_gateway_request: PublishDatasourceToGatewayRequest
+    ) -> GatewayDatasource:
+        """Creates a new datasource on the specified gateway
+
+        :param gateway_id: The gateway id
+        :param datasource_to_gateway_request: Request describing the datasource to be created
+        """
+        # form the url
+        url = f"{self.base_url}/{self.gateways_snippet}/{gateway_id}/{self.datasources_snippet}"
+
+        # define request body
+        body = datasource_to_gateway_request.to_dict()
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.post(url, headers=headers, json=body)
+
+        # 201 is the only successful code, raise an exception on any other response code
+        if response.status_code != 201:
+            raise HTTPError(f'Create Datasource request returned the following http error: {response.json()}')
+
+        return self._model_from_get_one_response(response, GatewayDatasource)
+
     @classmethod
     def _models_from_get_multiple_response(
-            cls,
-            response: requests.Response,
-            model_class: Type[Deserializable]
+        cls,
+        response: requests.Response,
+        model_class: Type[Deserializable]
     ) -> List[Any]:
         """Creates a list of models from a http response object
 
@@ -111,3 +139,14 @@ class Gateways:
             items.append(model_class.from_dict(entry))
 
         return items
+
+    @classmethod
+    def _model_from_get_one_response(
+        cls,
+        response: requests.Response,
+        model_class: Type[Deserializable]
+    ) -> Any:
+        # parse
+        response_dict = json.loads(response.text)
+
+        return model_class.from_dict(response_dict)

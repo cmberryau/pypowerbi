@@ -2,7 +2,8 @@
 import json
 from typing import Dict, Union, Optional
 from .base import Deserializable
-from .enums import CredentialType, DatasourceUserAccessRight, PrincipalType
+from .enums import CredentialType, DatasourceUserAccessRight, PrincipalType, EncryptedConnection, EncryptionAlgorithm, \
+    PrivacyLevel
 
 
 class GatewayPublicKey(Deserializable):
@@ -213,3 +214,159 @@ class DatasourceUser(Deserializable):
 
     def __repr__(self) -> str:
         return f'<DatasourceUser id={self.identifier} type={self.principal_type.name} display_name={self.display_name}>'
+
+
+class DatasourceConnectionDetails:
+    server_key = "server"
+    database_key = "database"
+    url_key = "url"
+
+    def __init__(
+        self,
+        server: str = "",
+        database: str = "",
+        url: str = ""
+    ):
+        """Creates a DatasourceConnectionDetails object
+
+        :param server: The connection server
+        :param database: The connection database
+        :param url: The connection url
+        """
+        self.server = server
+        self.database = database
+        self.url = url
+
+    def __repr__(self):
+        server_part = f'server={self.server}' if self.server else self.server
+        database_part = f'database={self.database}' if self.database else self.database
+        url_part = f'url={self.url}' if self.url else self.url
+
+        return f'<DatasourceConnectionDetails {server_part} {database_part} {url_part}>'
+
+    def as_set_values_dict(self) -> Dict[str, str]:
+        """Returns a dictionary with only those values of attributes that are set
+
+        :return: Dictionary with set values
+        """
+        set_values = dict()
+
+        if self.server:
+            set_values[self.server_key] = self.server
+
+        if self.database:
+            set_values[self.database_key] = self.database
+
+        if self.url:
+            set_values[self.url_key] = self.url
+
+        return set_values
+
+    def to_json(self) -> str:
+        """Provides a json string that can be used in a PublishDatasourceToGatewayRequest
+
+        :return: json string of set values
+        """
+        json_dict = self.as_set_values_dict()
+
+        # dump twice to get double quotes escaped properly
+        # remove spaces between object keys and values
+        # replace double backslashes with single slashes
+        # remove double quotes at start and end of str
+        return json.dumps(json.dumps(json_dict)) \
+            .replace(r'": ', r'":') \
+            .replace('\\\\', '\\') \
+            [1:-1]
+
+
+class CredentialDetails:
+    credentials_key = "credentials"
+    credential_type_key = "credentialType"
+    encrypted_connection_key = "encryptedConnection"
+    encryption_algorithm_key = "encryptionAlgorithm"
+    privacy_level_key = "privacyLevel"
+    use_caller_aad_identity_key = "useCallerAADIdentity"
+    use_end_user_o_auth_2_credentials_key = "useEndUserOAuth2Credentials"
+
+    def __init__(
+        self,
+        credentials: str,
+        credential_type: CredentialType,
+        encrypted_connection: EncryptedConnection,
+        encryption_algorithm: EncryptionAlgorithm,
+        privacy_level: PrivacyLevel,
+        use_caller_aad_identity: Optional[bool] = None,
+        use_end_user_o_auth_2_credentials: Optional[bool] = None
+    ):
+        """Constructs a CredentialsDetails object
+
+        :param credentials: The credentials to access a datasource
+        :param credential_type: The type of credentials to access a datasource
+        :param encrypted_connection: Encryption behaviour applied to the datasource connection
+        :param encryption_algorithm: The encryption algorithm. For cloud datasource, use 'None'. For an on-premises
+         datasource, use the gateway public key with the 'RSA-OAEP' algorithm.
+        :param privacy_level: The privacy level. This becomes relevant when combining data from multiple datasources.
+        :param use_caller_aad_identity: Should the caller's AAD identity be used for OAuth2 credentials configuration
+        :param use_end_user_o_auth_2_credentials: Should the end-user's OAuth2 credentials be used for connecting to
+         the datasource in DirectQuery mode. Only supported for Direct Query to SQL Azure.
+        """
+        self.credentials = credentials
+        self.credential_type = credential_type
+        self.encrypted_connection = encrypted_connection
+        self.encryption_algorithm = encryption_algorithm
+        self.privacy_level = privacy_level
+        self.use_caller_aad_identity = use_caller_aad_identity
+        self.use_end_user_o_auth_2_credentials = use_end_user_o_auth_2_credentials
+
+    def to_dict(self):
+        return {
+            self.credentials_key: self.credentials,
+            self.credential_type_key: self.credential_type.value,
+            self.encrypted_connection_key: self.encrypted_connection.value,
+            self.encryption_algorithm_key: self.encryption_algorithm.value,
+            self.privacy_level_key: self.privacy_level.value,
+            self.use_caller_aad_identity_key: self.use_caller_aad_identity,
+            self.use_end_user_o_auth_2_credentials_key: self.use_end_user_o_auth_2_credentials
+        }
+
+    def __repr__(self) -> str:
+        return f"<CredentialDetails type={self.credential_type.value}>"
+
+
+class PublishDatasourceToGatewayRequest:
+    datasource_type_key = "dataSourceType"
+    connection_details_key = "connectionDetails"
+    credential_details_key = "credentialDetails"
+    datasource_name_key = "datasourceName"
+
+    def __init__(
+        self,
+        datasource_type: str,
+        connection_details: str,
+        credential_details: CredentialDetails,
+        datasource_name: str
+    ):
+        """Constructs a PublishDatasourceToGatewayRequest
+
+        :param datasource_type: The datasource type
+        :param connection_details: The connection details
+        :param credential_details: The credentials to access the datasource
+        :param datasource_name: The datasource name
+        """
+        self.datasource_type = datasource_type
+        self.connection_details = connection_details
+        self.credential_details = credential_details
+        self.datasource_name = datasource_name
+
+    def to_dict(self) -> Dict[str, Union[str, Dict[str, str]]]:
+        return {
+            self.datasource_type_key: self.datasource_type,
+            self.connection_details_key: self.connection_details,
+            self.credential_details_key: self.credential_details.to_dict(),
+            self.datasource_name_key: self.datasource_name
+        }
+
+    def __repr__(self):
+        return '<PublishDatasourceToGatewayRequest ' \
+               f'name={self.datasource_name} ' \
+               f'type={self.datasource_type}>'
