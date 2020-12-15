@@ -99,10 +99,9 @@ class CredentialsBuilder:
         # remove spaces between object keys and values
         # replace double backslashes with single slashes
         # remove double quotes at start and end of str
-        return json.dumps(json.dumps(credentials_dict))\
+        return json.dumps(credentials_dict)\
             .replace(r'": ', r'":')\
-            .replace('\\\\','\\')\
-            [1:-1]
+            .replace('\\\\','\\')
 
     @classmethod
     def get_anonymous_credentials(cls) -> str:
