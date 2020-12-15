@@ -269,11 +269,11 @@ class DatasourceConnectionDetails:
         """
         json_dict = self.as_set_values_dict()
 
-        # dump twice to get double quotes escaped properly
+        # dump to json string
         # remove spaces between object keys and values
         # replace double backslashes with single slashes
         # remove double quotes at start and end of str
-        return json.dumps(json.dumps(json_dict)) \
+        return json.dumps(json_dict) \
             .replace(r'": ', r'":') \
             .replace('\\\\', '\\') \
             [1:-1]
