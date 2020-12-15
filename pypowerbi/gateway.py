@@ -275,8 +275,7 @@ class DatasourceConnectionDetails:
         # remove double quotes at start and end of str
         return json.dumps(json_dict) \
             .replace(r'": ', r'":') \
-            .replace('\\\\', '\\') \
-            [1:-1]
+            .replace('\\\\', '\\')
 
 
 class CredentialDetails:
