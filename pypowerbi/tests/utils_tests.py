@@ -69,26 +69,26 @@ class UtilsTests(TestCase):
     # https://docs.microsoft.com/en-us/rest/api/power-bi/gateways/updatedatasource#examples
     def test_get_anonymous_credentials(self):
         actual = CredentialsBuilder.get_anonymous_credentials()
-        expected = r'{\"credentialData\":\"\"}'
+        expected = r'{"credentialData":""}'
         self.assertEqual(expected, actual)
 
     def test_get_basic_credentials(self):
         actual = CredentialsBuilder.get_basic_credentials("john", "*****")
-        expected = r'{\"credentialData\":[{\"name\":\"username\", \"value\":\"john\"}, {\"name\":\"password\", \"value\":\"*****\"}]}'
+        expected = r'{"credentialData":[{"name":"username","value":"john"},{"name":"password","value":"*****"}]}'
         self.assertEqual(expected, actual)
 
     def test_get_key_credentials(self):
         actual = CredentialsBuilder.get_key_credentials("ec....LA=")
-        expected = r'{\"credentialData\":[{\"name\":\"key\", \"value\":\"ec....LA=\"}]}'
+        expected = r'{"credentialData":[{"name":"key","value":"ec....LA="}]}'
         self.assertEqual(expected, actual)
 
     def test_get_o_auth_2_credentials(self):
         actual = CredentialsBuilder.get_o_auth_2_credentials("eyJ0....fwtQ")
-        expected = r'{\"credentialData\":[{\"name\":\"accessToken\", \"value\":\"eyJ0....fwtQ\"}]}'
+        expected = r'{"credentialData":[{"name":"accessToken","value":"eyJ0....fwtQ"}]}'
         self.assertEqual(expected, actual)
 
     def test_get_windows_credentials(self):
-        actual = CredentialsBuilder.get_windows_credentials(r'contoso\john', "*****")
-        expected = r'{\"credentialData\":[{\"name\":\"username\", \"value\":\"contoso\\john\"}, {\"name\":\"password\", \"value\":\"*****\"}]}'
+        actual = CredentialsBuilder.get_windows_credentials(r'contoso\\john', "*****")
+        expected = r'{"credentialData":[{"name":"username","value":"contoso\\john"},{"name":"password","value":"*****"}]}'
 
         self.assertEqual(expected, actual)

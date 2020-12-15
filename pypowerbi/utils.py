@@ -99,8 +99,7 @@ class CredentialsBuilder:
         # remove spaces between object keys and values
         # replace double backslashes with single slashes
         # remove double quotes at start and end of str
-        return json.dumps(credentials_dict)\
-            .replace(r'": ', r'":')\
+        return json.dumps(credentials_dict, separators=(',', ':'))\
             .replace('\\\\','\\')
 
     @classmethod
