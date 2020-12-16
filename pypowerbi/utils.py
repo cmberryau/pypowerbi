@@ -55,7 +55,7 @@ def convert_datetime_fields(list_of_dicts, fields_to_convert):
 class CredentialsBuilder:
     """
     This class can be used to quickly generate credentials strings for use in a gateway.CredentialDetails object.
-    Which methods to use depends on Which enums.CredentialType is passed along with the credentials in the constructor
+    Which method to use depends on which enums.CredentialType is passed along with the credentials in the constructor
     for gateway.CredentialDetails.
     """
 
@@ -95,10 +95,9 @@ class CredentialsBuilder:
 
     @staticmethod
     def _serialize(credentials_dict: Dict[str, Union[str, List[Dict[str, str]]]]) -> str:
-        # dump twice to get double quotes escaped properly
-        # remove spaces between object keys and values
+        # dump once to get double quotes escaped properly when converted to a request
+        # separators: remove spaces between object keys, values, and objects themselves
         # replace double backslashes with single slashes
-        # remove double quotes at start and end of str
         return json.dumps(credentials_dict, separators=(',', ':'))\
             .replace('\\\\','\\')
 
