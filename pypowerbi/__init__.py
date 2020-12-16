@@ -1,3 +1,7 @@
+import future_fstrings
+
+future_fstrings.register()
+
 from .client import *
 from .dataset import *
 from .datasets import *
