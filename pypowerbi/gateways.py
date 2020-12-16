@@ -41,6 +41,27 @@ class Gateways:
 
         return self._models_from_get_multiple_response(response, Gateway)
 
+    def get_gateway(self, gateway_id: str) -> Gateway:
+        """Return the specified gateway
+
+        :param gateway_id: The gateway id
+        :return: The gateway
+        """
+        # form the url
+        url = f'{self.base_url}/{self.gateways_snippet}/{gateway_id}'
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.get(url, headers=headers)
+
+        # 200 is the only successful code, raise an exception on any other response code
+        if response.status_code != 200:
+            raise HTTPError(response, f'Get Gateway request returned http error: {response.json()}')
+
+        return self._model_from_get_one_response(response, Gateway)
+
     def get_datasources(self, gateway_id: str) -> List[GatewayDatasource]:
         """Returns a list of datasources from the specified gateway
 
