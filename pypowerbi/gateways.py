@@ -139,7 +139,7 @@ class Gateways:
         self,
         gateway_id: str,
         datasource_id: str
-    ):
+    ) -> None:
         """Deletes the specified datasource from the specified gateway
 
         :param gateway_id: The gateway id
@@ -160,6 +160,40 @@ class Gateways:
             raise HTTPError(f'Delete Datasource request returned the following http error: {response.json()}')
 
         return None
+
+    def add_datasource_user(
+        self,
+        gateway_id: str,
+        datasource_id: str,
+        datasource_user: DatasourceUser
+    ) -> None:
+        """Grants or updates the permissions required to use the specified datasource for the specified user
+
+        :param gateway_id: The gateway id
+        :param datasource_id: The datasource id
+        :param datasource_user: The datasource user to add
+        """
+        # form the url
+        url = f'{self.base_url}/{self.gateways_snippet}/{gateway_id}/{self.datasources_snippet}/{datasource_id}/' \
+              f'{self.users_snippet}'
+
+        # define request body
+        body = datasource_user.as_set_values_dict()
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.post(url, headers=headers, json=body)
+
+        if response.status_code != 200:
+            # add datasource user requests return an empty body; get the error from headers instead
+            error_info = response.headers['x-powerbi-error-info']
+            raise HTTPError(f'Add group request returned the following http error: {error_info} with status code:'
+                            f' {response.status_code}')
+
+        return None
+
 
     @classmethod
     def _models_from_get_multiple_response(

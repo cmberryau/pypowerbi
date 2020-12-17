@@ -1,6 +1,7 @@
 # -*- coding: future_fstrings -*-
 import json
 from typing import Dict, Union, Optional
+
 from .base import Deserializable
 from .enums import CredentialType, DatasourceUserAccessRight, PrincipalType, EncryptedConnection, EncryptionAlgorithm, \
     PrivacyLevel
@@ -211,6 +212,25 @@ class DatasourceUser(Deserializable):
             else principal_type_value
 
         return cls(datasource_user_access_right, email_address, display_name, datasource_user_id, principal_type)
+
+    def as_set_values_dict(self) -> Dict[str, str]:
+        set_values_dict = dict()
+
+        set_values_dict[self.datasource_access_right_key] = self.datasource_access_right.value
+
+        if self.email_address:
+            set_values_dict[self.email_address_key] = self.email_address
+
+        if self.display_name:
+            set_values_dict[self.display_name_key] = self.display_name
+
+        if self.identifier:
+            set_values_dict[self.identifier_key] = self.identifier
+
+        if self.principal_type:
+            set_values_dict[self.principal_type_key] = self.principal_type.value
+
+        return set_values_dict
 
     def __repr__(self) -> str:
         return f'<DatasourceUser id={self.identifier} type={self.principal_type.name} display_name={self.display_name}>'
