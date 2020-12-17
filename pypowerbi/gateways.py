@@ -118,7 +118,7 @@ class Gateways:
         :param datasource_to_gateway_request: Request describing the datasource to be created
         """
         # form the url
-        url = f"{self.base_url}/{self.gateways_snippet}/{gateway_id}/{self.datasources_snippet}"
+        url = f'{self.base_url}/{self.gateways_snippet}/{gateway_id}/{self.datasources_snippet}'
 
         # define request body
         body = datasource_to_gateway_request.to_dict()
@@ -134,6 +134,32 @@ class Gateways:
             raise HTTPError(f'Create Datasource request returned the following http error: {response.json()}')
 
         return self._model_from_get_one_response(response, GatewayDatasource)
+
+    def delete_datasource(
+        self,
+        gateway_id: str,
+        datasource_id: str
+    ):
+        """Deletes the specified datasource from the specified gateway
+
+        :param gateway_id: The gateway id
+        :param datasource_id: The datasource id
+        :return: None
+        """
+        # form the url
+        url = f'{self.base_url}/{self.gateways_snippet}/{gateway_id}/{self.datasources_snippet}/{datasource_id}'
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.delete(url, headers=headers)
+
+        # 200 is the only successful code, raise an exception on any other response code
+        if response.status_code != 200:
+            raise HTTPError(f'Delete Datasource request returned the following http error: {response.json()}')
+
+        return None
 
     @classmethod
     def _models_from_get_multiple_response(
