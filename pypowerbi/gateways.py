@@ -188,8 +188,7 @@ class Gateways:
 
         if response.status_code != 200:
             # add datasource user requests return an empty body; get the error from headers instead
-            error_info = response.headers['x-powerbi-error-info']
-            raise HTTPError(f'Add group request returned the following http error: {error_info} with status code:'
+            raise HTTPError(f'Add group request returned the following http error: {response.json()} with status code:'
                             f' {response.status_code}')
 
         return None
