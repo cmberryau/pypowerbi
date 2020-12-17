@@ -188,8 +188,8 @@ class Gateways:
 
         if response.status_code != 200:
             # add datasource user requests return an empty body; get the error from headers instead
-            raise HTTPError(f'Add group request returned the following http error: {response.json()} with status code:'
-                            f' {response.status_code}')
+            raise HTTPError(f'Add datasource user request returned the following http error: {response.json()} '
+                            f'with status code: {response.status_code}')
 
         return None
 
