@@ -167,7 +167,9 @@ class Gateways:
         datasource_id: str,
         datasource_user: DatasourceUser
     ) -> None:
-        """Grants or updates the permissions required to use the specified datasource for the specified user
+        """Grants or updates the permissions required to use the specified datasource for the specified user. Note:
+        This method does not work with a service principal, only with a username password flow, for which the user
+        has given consent.
 
         :param gateway_id: The gateway id
         :param datasource_id: The datasource id
