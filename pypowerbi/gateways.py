@@ -194,7 +194,6 @@ class Gateways:
 
         return None
 
-
     @classmethod
     def _models_from_get_multiple_response(
         cls,
