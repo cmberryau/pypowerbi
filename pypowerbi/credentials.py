@@ -49,12 +49,18 @@ class AnonymousCredentials(CredentialsBase):
         super().__init__()
         self.credential_data[self.credential_data_key] = ""
 
+    def __repr__(self) -> str:
+        return f'<AnonymousCredentials>'
+
 
 class BasicCredentials(UsernamePasswordCredentials):
     CREDENTIAL_TYPE = CredentialType.BASIC
 
     def __init__(self, username: str, password: str):
         super().__init__(username, password)
+
+    def __repr__(self) -> str:
+        return f'<BasicCredentials username={self.username}>'
 
 
 class KeyCredentials(CredentialsBase):
@@ -71,6 +77,9 @@ class KeyCredentials(CredentialsBase):
 
         super().add_credential_data(self.key_key, key)
 
+    def __repr__(self) -> str:
+        return f'<KeyCredentials>'
+
 
 class OAuth2Credentials(CredentialsBase):
     CREDENTIAL_TYPE = CredentialType.OAUTH2
@@ -84,9 +93,15 @@ class OAuth2Credentials(CredentialsBase):
 
         super().add_credential_data(self.access_token_key, access_token)
 
+    def __repr__(self) -> str:
+        return f'<OAuth2Credentials>'
+
 
 class WindowsCredentials(UsernamePasswordCredentials):
     CREDENTIAL_TYPE = CredentialType.WINDOWS
 
     def __init__(self, username: str, password: str):
         super().__init__(username, password)
+
+    def __repr__(self):
+        return f'<WindowsCredentials username={self.username}>'
