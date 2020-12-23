@@ -226,7 +226,8 @@ class Reports:
 
         :param report_id: The report id
         :param save_path: The path where the pbix file should be saved
-        :param filename: The name to assign to the downloaded file. If None, the report name will be used
+        :param filename: The name to assign to the downloaded file (without the pbix extension).
+         If None, the report name will be used.
         :param group_id: The id of the workspace that contains the report. If None, then 'My workspace' is assumed.
         """
         # group_id can be None. Account for it here
