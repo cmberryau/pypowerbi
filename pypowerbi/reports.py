@@ -1,4 +1,8 @@
 # -*- coding: future_fstrings -*-
+import zipfile
+import io
+from typing import Optional
+
 import requests
 import json
 from requests.exceptions import HTTPError
@@ -13,6 +17,7 @@ class Reports:
     reports_snippet = 'reports'
     rebind_snippet = 'rebind'
     clone_snippet = 'clone'
+    export_snippet = 'Export'
     generate_token_snippet = 'generatetoken'
 
     # json keys
@@ -210,6 +215,39 @@ class Reports:
             raise HTTPError(response, f'Generate token for report request returned http error: {response.json()}')
 
         return pypowerbi.client.EmbedToken.from_dict(json.loads(response.text))
+
+    def export_report(self, report_id: str, save_path: str, group_id: Optional[str]=None) -> None:
+        """Exports the specified report to a .pbix file.
+
+        :param report_id: The report id
+        :param save_path: The path where the pbix file should be saved
+        :param group_id: The id of the workspace that contains the report. If None, then 'My workspace' is assumed.
+        """
+        # group_id can be None. Account for it here
+        if group_id is None:
+            groups_part = '/'
+        else:
+            groups_part = f'/{self.groups_snippet}/{group_id}/'
+
+        # form the url
+        url = f'{self.base_url}{groups_part}{self.reports_snippet}/{report_id}/{self.export_snippet}'
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.get(url, headers=headers)
+
+        # 200 is the only valid response. Show an error in other cases.
+        if response.status_code != 200:
+            in_group_part = {"" if group_id is None else "in Group"}
+            raise HTTPError(response, f'Export Report {in_group_part} request returned an http error: '
+                                      f'{response.json()}')
+
+        # extract the report from the zipfile to specified save path
+        with zipfile.ZipFile(io.BytesIO(response.content)) as report_zip:
+            report_zip.extractall(save_path)
+
 
     @classmethod
     def reports_from_get_reports_response(cls, response):
