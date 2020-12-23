@@ -216,11 +216,18 @@ class Reports:
 
         return pypowerbi.client.EmbedToken.from_dict(json.loads(response.text))
 
-    def export_report(self, report_id: str, save_path: str, group_id: Optional[str]=None) -> None:
-        """Exports the specified report to a .pbix file.
+    def export_report(
+        self,
+        report_id: str,
+        save_path: str,
+        filename: Optional[str] = None,
+        group_id: Optional[str] = None
+    ) -> None:
+        """Exports the specified report to a pbix file.
 
         :param report_id: The report id
         :param save_path: The path where the pbix file should be saved
+        :param filename: The name to assign to the downloaded file. If None, the report name will be used
         :param group_id: The id of the workspace that contains the report. If None, then 'My workspace' is assumed.
         """
         # group_id can be None. Account for it here
@@ -244,10 +251,13 @@ class Reports:
             raise HTTPError(response, f'Export Report {in_group_part} request returned an http error: '
                                       f'{response.json()}')
 
-        # extract the report from the zipfile to specified save path
-        with zipfile.ZipFile(io.BytesIO(response.content)) as report_zip:
-            report_zip.extractall(save_path)
+        # save report to save path
+        if filename is None:
+            report = self.get_report(report_id, group_id)
+            filename = report.name
 
+        with zipfile.ZipFile(io.BytesIO(response.content)) as report_zip:
+            report_zip.write(f'{save_path}/{filename}')
 
     @classmethod
     def reports_from_get_reports_response(cls, response):
