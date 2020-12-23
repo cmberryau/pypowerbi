@@ -247,7 +247,7 @@ class Reports:
 
         # 200 is the only valid response. Show an error in other cases.
         if response.status_code != 200:
-            in_group_part = {"" if group_id is None else "in Group"}
+            in_group_part = "" if group_id is None else "in Group"
             raise HTTPError(response, f'Export Report {in_group_part} request returned an http error: '
                                       f'{response.json()}')
 
@@ -257,7 +257,7 @@ class Reports:
             filename = report.name
 
         with zipfile.ZipFile(io.BytesIO(response.content)) as report_zip:
-            report_zip.write(f'{save_path}/{filename}')
+            report_zip.write(f'{save_path}/{filename}.pbix')
 
     @classmethod
     def reports_from_get_reports_response(cls, response):
