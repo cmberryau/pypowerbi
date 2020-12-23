@@ -1,5 +1,4 @@
 # -*- coding: future_fstrings -*-
-import zipfile
 import io
 from typing import Optional
 
@@ -256,8 +255,10 @@ class Reports:
             report = self.get_report(report_id, group_id)
             filename = report.name
 
-        with zipfile.ZipFile(io.BytesIO(response.content)) as report_zip:
-            report_zip.write(f'{save_path}/{filename}.pbix')
+        with open(f'{save_path}/{filename}.pbix', 'wb') as report_file:
+            report_file.write(
+                io.BytesIO(response.content).getbuffer()
+            )
 
     @classmethod
     def reports_from_get_reports_response(cls, response):
