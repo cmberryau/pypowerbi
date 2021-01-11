@@ -17,6 +17,7 @@ class Datasets:
     set_parameters_snippet = 'Default.UpdateParameters'
     bind_gateway_snippet = 'Default.BindToGateway'
     refreshes_snippet = 'refreshes'
+    refresh_schedule_snippet = 'refreshSchedule'
 
     # json keys
     get_datasets_value_key = 'value'
@@ -459,6 +460,40 @@ class Datasets:
         refresh_data = convert_datetime_fields(refresh_data, time_fields)
 
         return refresh_data
+
+    def update_refresh_schedule(
+        self,
+        dataset_id: str,
+        refresh_schedule: RefreshSchedule,
+        group_id: Optional[str] = None
+    ):
+        """Updates the refresh schedule for a given dataset in a given workspace.
+
+        :param dataset_id: The dataset id
+        :param refresh_schedule: The updates for the refresh schedule. If a field remains None, no changes are made.
+        :param group_id: The workspace id of the workspace in which the dataset resides. If None, 'My Workspace' is
+        assumed.
+        """
+        if group_id is None:
+            groups_part = '/'
+        else:
+            groups_part = f'/{self.groups_snippet}/{group_id}/'
+
+        # form the url
+        url = f'{self.base_url}{groups_part}/{self.datasets_snippet}/{dataset_id}/{self.refresh_schedule_snippet}'
+
+        # form the headers
+        headers = self.client.auth_header
+
+        # form the body
+        body = RefreshScheduleRequest(refresh_schedule).as_dict()
+
+        # get the response
+        response = requests.patch(url, headers=headers, json=body)
+
+        # 200 is the only successful code, raise an exception on any other response code
+        if response.status_code != 200:
+            raise HTTPError(f'Update refresh schedule request returned the following http error:{response.json()}')
 
     @classmethod
     def datasets_from_get_datasets_response(cls, response):
