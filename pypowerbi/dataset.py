@@ -296,12 +296,23 @@ class RefreshSchedule:
     local_time_zone_id_key = 'localTimeZoneId'
     times_key = 'times'
 
+    @classmethod
+    def from_dict(cls, dictionary: Dict[str, Union[str, bool]]) -> 'RefreshSchedule':
+        notify_option_value = dictionary.get(cls.notify_option_key, None)
+        notify_option = ScheduleNotifyOption(notify_option_value) if notify_option_value else None
+        days = dictionary.get(cls.days_key, None)
+        enabled = dictionary.get(cls.enabled_key, None)
+        local_time_zone_id = dictionary.get(cls.local_time_zone_id_key, "")
+        times = dictionary.get(cls.times_key, None)
+
+        return cls(notify_option, days, enabled, local_time_zone_id, times)
+
     def __init__(
         self,
         notify_option: Optional[ScheduleNotifyOption] = None,
         days: Optional[List[str]] = None,
         enabled: Optional[bool] = None,
-        local_time_zone_id: Optional[str] = None,
+        local_time_zone_id: Optional[str] = "",
         times: Optional[List[str]] = None
     ):
         """Constructs a RefreshSchedule object
