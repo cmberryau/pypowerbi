@@ -1,6 +1,7 @@
 # -*- coding: future_fstrings -*-
 import datetime
 
+
 """
 This file contains helper and utility functions used elsewhere in the library.
 """
@@ -23,6 +24,7 @@ def date_from_powerbi_str(dstr):
     else:
         # Fractional seconds are not zero padded in the API and will not be included at all if 0, thus the second format
         return datetime.datetime.strptime(dstr, _date_fmt_str2)
+
 
 def convert_datetime_fields(list_of_dicts, fields_to_convert):
     """

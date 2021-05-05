@@ -8,6 +8,7 @@ from .reports import Reports
 from .datasets import Datasets
 from .imports import Imports
 from .groups import Groups
+from .gateways import Gateways
 from .activity_logs import ActivityLogs
 
 
@@ -60,6 +61,7 @@ class PowerBIClient:
         self.reports = Reports(self)
         self.imports = Imports(self)
         self.groups = Groups(self)
+        self.gateways = Gateways(self)
         self.activity_logs = ActivityLogs(self)
 
     @property

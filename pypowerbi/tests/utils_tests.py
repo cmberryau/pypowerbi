@@ -1,11 +1,11 @@
-# -*- coding: future_fstrings -*-
-
 import json
 from unittest import TestCase
 
 import datetime
 
 from pypowerbi import utils
+from pypowerbi.utils import CredentialsBuilder
+
 
 class UtilsTests(TestCase):
     def test_date_from_powerbi_str(self):
@@ -64,4 +64,3 @@ class UtilsTests(TestCase):
 
         for converted, target in zip(converted_list, target_list):
             self.assertEqual(converted, target)
-
