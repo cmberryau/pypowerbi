@@ -35,16 +35,7 @@ class GroupUser:
         :param dictionary: The dictionary to create a user from
         :return: The created dictionary
         """
-        """
-        {
-          "displayName": "John Nick",
-          "emailAddress": "john@contoso.com",
-          "groupUserAccessRight": "Admin",
-          "identifier": "john@contoso.com",
-          "principalType": "User"
-        },
-        """
-        return Report(str(dictionary[cls.group_user_access_right]), str(dictionary[cls.email_address]), str(dictionary[cls.display_name]), str(dictionary[cls.identifier]), str(dictionary[cls.principal_type]))
+        return GroupUser(str(dictionary[cls.group_user_access_right_key]), str(dictionary[cls.email_address_key]), str(dictionary[cls.display_name_key]), str(dictionary[cls.identifier_key]), str(dictionary[cls.principal_type_key]))
 
     def as_set_values_dict(self):
         """Convert GroupUser object to dict with only values that are actually set. This dict can be used for

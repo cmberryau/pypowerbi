@@ -14,7 +14,7 @@ class Groups:
     users_snippet = 'users'
 
     # json keys
-    get_reports_value_key = 'value'
+    get_user_value_key = 'value'
 
     def __init__(self, client):
         self.client = client
@@ -120,13 +120,13 @@ class Groups:
 
         # get the response
         response = requests.get(url, headers=headers)
-        # 200 - OK. Indicates success. List of reports.
+        # 200 - OK. Indicates success. List of users.
         if response.status_code == 200:
-            reports = self.users_from_get_group_users_response(response)
+            users = self.users_from_get_group_users_response(response)
         else:
-            raise HTTPError(response, f'Get reports request returned http error: {response.json()}')
+            raise HTTPError(response, f'Get users request returned http error: {response.json()}')
 
-        return reports
+        return users
             
     def count(self):
         """
@@ -205,7 +205,7 @@ class Groups:
         groups = []
 
         # go through entries returned from API
-        for entry in response_dict[cls.get_reports_value_key]:
+        for entry in response_dict[cls.get_users_value_key]:
             groups.append(Group.from_dict(entry))
 
         return groups
