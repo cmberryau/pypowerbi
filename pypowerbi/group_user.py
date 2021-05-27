@@ -61,3 +61,6 @@ class GroupUser:
             group_user_dict[self.principal_type_key] = self.principal_type.value
 
         return group_user_dict
+
+    def __repr__(self):
+        return f'<GroupUser {str(self.__dict__)}>'
