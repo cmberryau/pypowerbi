@@ -105,6 +105,29 @@ class Groups:
             error_info = response.headers['x-powerbi-error-info']
             raise HTTPError(f'Add group request returned the following http error: {error_info}')
 
+    def get_group_users(self, group_id):
+        """
+        Returns a list of users that have access to the specified workspace.
+        GET https://api.powerbi.com/v1.0/myorg/groups/{groupId}/users
+        
+        :param group_id:
+            str - id of the group to add the user to
+        """
+        # form the url
+        url = f'{self.base_url}/{self.groups_snippet}/{group_id}/{self.users_snippet}'
+        # form the headers
+        headers = self.client.auth_header
+
+        # get the response
+        response = requests.get(url, headers=headers)
+        # 200 - OK. Indicates success. List of reports.
+        if response.status_code == 200:
+            reports = self.users_from_get_group_users_response(response)
+        else:
+            raise HTTPError(response, f'Get reports request returned http error: {response.json()}')
+
+        return reports
+            
     def count(self):
         """
         Evaluates the number of groups that the client has access to
@@ -186,3 +209,19 @@ class Groups:
             groups.append(Group.from_dict(entry))
 
         return groups
+
+    @classmethod
+    def users_from_get_group_users_response(cls, response):
+        """
+        Creates a list of users from a http response
+        :param response: The response to create the users from
+        :return: A list of users created from the http response
+        """
+        # load the response into a dict
+        response_dict = json.loads(response.text)
+        users = []
+        # go through entries returned from API
+        for entry in response_dict[cls.get_user_value_key]:
+            users.append(GroupUser.from_dict(entry))
+
+        return users
